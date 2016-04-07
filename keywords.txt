@@ -6,13 +6,15 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-BSON	KEYWORD1
+BSONObjBuilder	KEYWORD1
+BSONObject		KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 append	KEYWORD2
+obj		KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
