@@ -12,6 +12,10 @@
 
 BSONObjBuilder::BSONObjBuilder(void)
 {
+  // Fill buffer with 0xFF
+  for (int i = 0; i < 1024; i++) {
+    _data[i] = 0xFF;
+  }
   _idx = 4; // Leave room for size field (4-bytes)
 }
 
@@ -20,60 +24,88 @@ BSONObjBuilder::BSONObjBuilder(void)
 
 int BSONObjBuilder::append(char *key, char *value)
 {
-  char *original;
   int start = (int)_idx;
   uint32_t len = 0;
-  uint32_t off = 0;                             // Offset for string size field
-
-  // ## KEY
+  uint32_t off = 0;
   _data[_idx++] = BSON_TYPE_STRING;             // Add type of value to object
-  for (;*key != 0x00; key++) {                  // Add key to object
-    _data[_idx++] = *key;
-    if (*(key+1) == 0x00)
-      _data[_idx++] = BSON_NULL;                // Add NULL terminator
-  }
-
-  // ## VALUE
+  _idx += insertString(_idx, key);              // Add key to object
   off = _idx;
-  len = 0;
   _idx += 4;                                    // Leave room for size field (4-bytes)
-  for (;*value != 0x00; value++) {              // Add value to object
-    _data[_idx++] = *value;
-    len++;
-    if (*(value+1) == 0x00) {
-      _data[_idx++] = BSON_NULL;                // Add NULL terminator
-      len++;
-    }
-  }
-  insertSize(off, len);
+  len = insertString(_idx, value);              // Add value to object
+  _idx += len;
+  insertUint32(off, len);                       // Add size of field
   return ((int)_idx-start);
 }
 
-/*void BSON::append(String key, double value)
+int BSONObjBuilder::append(char *key, int32_t value)
 {
-  // eventhough this function is public, it can access
-  // and modify this library's private variables
-  Serial.print("{\"");
-  Serial.print(key);
-  Serial.print("\":\"");
-  Serial.print(value);
-  Serial.println("\"}");
-}*/
-
-// Private Methods /////////////////////////////////////////////////////////////
-// Functions only available to other functions in this library
-
-void BSONObjBuilder::calcDataLen(void)
-{
-  // Do nothing
+  int start = (int)_idx;
+  _data[_idx++] = BSON_TYPE_INT32;              // Add type of value to object
+  _idx += insertString(_idx, key);              // Add key to object
+  _idx += insertInt32(_idx, value);             // Add value to object
+  return ((int)_idx-start);
 }
 
-
-void BSONObjBuilder::insertSize(uint32_t offset, uint32_t size)
+int BSONObjBuilder::append(char *key, int64_t value)
 {
-  _data[offset] = (uint8_t)(size & 0x000000FF);
-  _data[offset++] = (uint8_t)(size >> 8 & 0x000000FF);
-  _data[offset++] = (uint8_t)(size >> 16 & 0x000000FF);
-  _data[offset++] = (uint8_t)(size >> 24 & 0x000000FF);
+  int start = (int)_idx;
+  _data[_idx++] = BSON_TYPE_INT64;              // Add type of value to object
+  _idx += insertString(_idx, key);              // Add key to object
+  _idx += insertInt64(_idx, value);             // Add value to object
+  return ((int)_idx-start);
 }
 
+char* BSONObjBuilder::toString(void)
+{
+  char *data = "{\"hello\":\"world\"}";
+  return data;
+}
+
+void BSONObjBuilder::obj(void)
+{
+  _data[_idx++] = BSON_EOO;
+  insertUint32(0, _idx);
+}
+
+int BSONObjBuilder::len(void)
+{
+  return (int)_idx;
+}
+
+uint32_t BSONObjBuilder::insertUint32(uint32_t offset, uint32_t value)
+{
+  for (uint8_t i = 0; i < 4; i++) {
+    _data[offset+i] = (uint8_t)((value >> (i*8)) & 0xFF);
+  }
+  return 4;
+}
+
+uint32_t BSONObjBuilder::insertInt32(uint32_t offset, int32_t value)
+{
+  for (uint8_t i = 0; i < 4; i++) {
+    _data[offset+i] = (uint8_t)((value >> (i*8)) & 0xFF);
+  }
+  return 4;
+}
+
+uint32_t BSONObjBuilder::insertInt64(uint32_t offset, int64_t value)
+{
+  for (uint8_t i = 0; i < 8; i++) {
+    _data[offset+i] = (uint8_t)((value >> (i*8)) & 0xFF);
+  }
+  return 8;
+}
+
+uint32_t BSONObjBuilder::insertString(uint32_t offset, char *data)
+{
+  uint32_t len = 0;
+  for (;*data != 0x00; data++) {
+    _data[offset++] = *data;
+    len++;
+    if (*(data+1) == 0x00) {
+      _data[offset++] = BSON_NULL_BYTE;
+      len++;
+    }
+  }
+  return len;
+}
