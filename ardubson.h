@@ -19,7 +19,7 @@ class BSONObjBuilder
   public:
     BSONObjBuilder(void);
     BSONObjBuilder& append(char *key, char *value);
-    BSONObjBuilder& append(char *key, char *value, uint32_t size);
+    BSONObjBuilder& append(char *key, char *value, int size);
     BSONObjBuilder& append(char *key, bool value);
     BSONObjBuilder& append(char *key, int value);
     BSONObjBuilder& append(char *key, int32_t value);
@@ -32,6 +32,7 @@ class BSONObjBuilder
   private:
     char _data[1024];
     uint32_t _idx;
+    char* index(void);
     void appendNum(char value);
     void appendNum(uint32_t value);
     void appendNum(int32_t value);

@@ -15,8 +15,11 @@ BSONObject	KEYWORD1
 
 append	KEYWORD2
 toString	KEYWORD2
+data	KEYWORD2
 obj	KEYWORD2
 len	KEYWORD2
+appendNum	KEYWORD2
+appendStr	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

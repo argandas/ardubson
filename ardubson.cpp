@@ -11,13 +11,12 @@
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
 
-BSONObjBuilder::BSONObjBuilder(void) : _idx(0)
+BSONObjBuilder::BSONObjBuilder(void) : _idx(4)
 {
   // Fill buffer with 0xFF
   for (int i = 0; i < 1024; i++) {
-    _data[i] = 0xFF;
+    _data[i] = 0x7F;
   }
-  _idx += 4; // Leave room for size field (4-bytes)
 }
 
 char* BSONObjBuilder::data(void)
@@ -30,14 +29,14 @@ char* BSONObjBuilder::data(void)
 
 BSONObjBuilder& BSONObjBuilder::append(char *key, char *value)
 {
-  return append(key, value, (uint32_t) strlen(value)+1);
+  return append(key, value, strlen(value)+1);
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, char *value, uint32_t size)
+BSONObjBuilder& BSONObjBuilder::append(char *key, char *value, int size)
 {
-  appendNum((char) BSON_TYPE_STRING);             
-  appendStr(key);              
-  appendNum(size);
+  appendNum((char) BSON_TYPE_STRING);
+  appendStr(key);
+  appendNum((int32_t) size);
   appendStr(value);
   return *this;
 }
@@ -56,7 +55,7 @@ BSONObjBuilder& BSONObjBuilder::append(char *key, int value)
 
 BSONObjBuilder& BSONObjBuilder::append(char *key, int32_t value)
 {
-  appendNum((char) BSON_TYPE_INT32);             
+  appendNum((char) BSON_TYPE_INT32);
   appendStr(key);
   appendNum(value);
   return *this;
@@ -64,58 +63,72 @@ BSONObjBuilder& BSONObjBuilder::append(char *key, int32_t value)
 
 BSONObjBuilder& BSONObjBuilder::append(char *key, int64_t value)
 {
-  appendNum((char) BSON_TYPE_INT64);             
+  appendNum((char) BSON_TYPE_INT64);
   appendStr(key);
   appendNum(value);
 }
 
 char* BSONObjBuilder::toString(void)
 {
-  char *data = "{\"hello\":\"world\"}";
+  //char *data = "{\"hello\":\"world\"}";
+  char *data;
+  uint32_t len = *(uint32_t *)&_data[0];
+  uint32_t off = 4;
+  while ((off + 1) < len) {
+    uint32_t type = *(char *)&_data[off++];
+    if (type == (uint32_t)BSON_TYPE_STRING) {
+      data = (char *)&_data[off];
+      break;
+    }
+    if (type == (uint32_t)BSON_TYPE_INT32) {
+      data = (char *)&_data[off];
+      break;
+    }
+  }
   return data;
 }
 
 void BSONObjBuilder::obj(void)
 {
-  _data[_idx++] = BSON_EOO;
-  for (char i = 0; i < 4; i++) {
-    _data[i] = (char)((_idx >> (i*8)) & 0xFF);
-  }
+  appendNum((char) BSON_EOO);
+  *(uint32_t *)&_data = _idx;
 }
 
 int BSONObjBuilder::len(void)
 {
-  return (int)_idx;
+  return (int)*(uint32_t *)&_data[0];
+}
+
+char* BSONObjBuilder::index(void)
+{
+  return (&_data[0]) + _idx;
 }
 
 void BSONObjBuilder::appendNum(char value)
 {
-  _data[_idx++] = value;
+  *(char *)index() = value;
+  _idx++;
   return;
 }
 
 void BSONObjBuilder::appendNum(uint32_t value)
 {
-  for (char i = 0; i < 4; i++) {
-    appendNum((char)((value >> (i*8)) & 0xFF));
-  }
+  *(uint32_t *)index() = value;
+  _idx += 4;
   return;
 }
 
 void BSONObjBuilder::appendNum(int32_t value)
 {
-  char* ptr = (char*)&value;
-  for (char i = 0; i < sizeof(value); i++) {
-    appendNum(*ptr++);
-  }
+  *(int32_t *)index() = value;
+  _idx += 4;
   return;
 }
 
 void BSONObjBuilder::appendNum(int64_t value)
 {
-  for (char i = 0; i < 8; i++) {
-    appendNum((char)((value >> (i*8)) & 0xFF));
-  }
+  *(int64_t *)index() = value;
+  _idx += 8;
   return;
 }
 

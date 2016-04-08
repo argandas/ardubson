@@ -12,12 +12,13 @@ void loop() {
 
   // Append strings to BSON Builder
   bob.append("hello", "world");
-  bob.append("year", (int32_t)10);
-  bob.append("month", 12);
+  bob.append("year", 10);
+  bob.append("month", (int64_t)75);
+  bob.append("flag", true);
 
   // Generate BSON Object
   bob.obj();
-  
+
   Serial.print("Obj Len: ");
   Serial.println(bob.len());
 
