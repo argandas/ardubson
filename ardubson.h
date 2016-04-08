@@ -18,22 +18,25 @@ class BSONObjBuilder
 {
   public:
     BSONObjBuilder(void);
-
-    uint8_t  _data[1024];
-
     BSONObjBuilder& append(char *key, char *value);
+    BSONObjBuilder& append(char *key, char *value, uint32_t size);
+    BSONObjBuilder& append(char *key, bool value);
+    BSONObjBuilder& append(char *key, int value);
     BSONObjBuilder& append(char *key, int32_t value);
     BSONObjBuilder& append(char *key, int64_t value);
     char* toString(void);
+    char* data(void);
     void obj(void);
     int len(void);
 
   private:
-    uint32_t insertUint32(uint32_t offset, uint32_t value);
-    uint32_t insertInt32(uint32_t offset, int32_t value);
-    uint32_t insertInt64(uint32_t offset, int64_t value);
-    uint32_t insertString(uint32_t offset, char *data);
+    char _data[1024];
     uint32_t _idx;
+    void appendNum(char value);
+    void appendNum(uint32_t value);
+    void appendNum(int32_t value);
+    void appendNum(int64_t value);
+    void appendStr(char *data);
 };
 
 #endif
