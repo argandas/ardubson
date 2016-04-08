@@ -6,6 +6,7 @@
 
 #include "Arduino.h"
 #include "ardubson.h"
+#include "ardubsonTypes.h"
 
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
@@ -22,9 +23,8 @@ BSONObjBuilder::BSONObjBuilder(void)
 // Public Methods //////////////////////////////////////////////////////////////
 // Functions available in Wiring sketches, this library, and other libraries
 
-int BSONObjBuilder::append(char *key, char *value)
+BSONObjBuilder& BSONObjBuilder::append(char *key, char *value)
 {
-  int start = (int)_idx;
   uint32_t len = 0;
   uint32_t off = 0;
   _data[_idx++] = BSON_TYPE_STRING;             // Add type of value to object
@@ -34,25 +34,22 @@ int BSONObjBuilder::append(char *key, char *value)
   len = insertString(_idx, value);              // Add value to object
   _idx += len;
   insertUint32(off, len);                       // Add size of field
-  return ((int)_idx-start);
+  return *this;
 }
 
-int BSONObjBuilder::append(char *key, int32_t value)
+BSONObjBuilder& BSONObjBuilder::append(char *key, int32_t value)
 {
-  int start = (int)_idx;
   _data[_idx++] = BSON_TYPE_INT32;              // Add type of value to object
   _idx += insertString(_idx, key);              // Add key to object
   _idx += insertInt32(_idx, value);             // Add value to object
-  return ((int)_idx-start);
+  return *this;
 }
 
-int BSONObjBuilder::append(char *key, int64_t value)
+BSONObjBuilder& BSONObjBuilder::append(char *key, int64_t value)
 {
-  int start = (int)_idx;
   _data[_idx++] = BSON_TYPE_INT64;              // Add type of value to object
   _idx += insertString(_idx, key);              // Add key to object
   _idx += insertInt64(_idx, value);             // Add value to object
-  return ((int)_idx-start);
 }
 
 char* BSONObjBuilder::toString(void)
