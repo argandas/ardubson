@@ -1,7 +1,7 @@
 /*
- Created
- April 8, 2016
- by Hugo Arganda (@argandas)
+  Created
+  April 8, 2016
+  by Hugo Arganda (@argandas)
 */
 
 #include <SPI.h>
@@ -54,10 +54,12 @@ void setup() {
   Serial.print("Local IP: ");
   Serial.println(Ethernet.localIP());
 
-  // Append BSON data
-  bob.append("Hello", "world");
-  bob.append("Number", 1984);
-  bob.append("Boolean", true);
+  // Append elements to BSON Builder
+  bob.append("string", "2");
+  bob.append("int", 4);
+  bob.append("boolean", false);
+
+  // Generate BSON Object
   bob.obj();
 }
 
@@ -75,6 +77,6 @@ void loop() {
   Serial.print("Sent ");
   Serial.print(n);
   Serial.println(" bytes to server");
-  
+
   delay(10 * 1000);
 }

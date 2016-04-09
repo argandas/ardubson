@@ -1,30 +1,31 @@
+/*
+  Created
+  April 8, 2016
+  by Hugo Arganda (@argandas)
+*/
+
 #include <ardubson.h>
 
+// Create a BSON Builder
+BSONObjBuilder bob;
+
 void setup() {
-  // put your setup code here, to run once:
+  // Setup serial port
   Serial.begin(9600);
-  Serial.println("BSON library test");
-}
+  Serial.println("BSON Object Builder example");
 
-void loop() {
-  // Create a BSON Builder
-  BSONObjBuilder bob;
-
-  // Append strings to BSON Builder
+  // Append an element to BSON Builder
   bob.append("hello", "world");
-  bob.append("year", 10);
-  bob.append("month", (int64_t)75);
-  bob.append("flag", true);
 
   // Generate BSON Object
   bob.obj();
 
-  Serial.print("Obj Len: ");
+  // Print object length
+  Serial.print("bob Len: ");
   Serial.println(bob.len());
 
-  Serial.print("String: ");
-  Serial.println(bob.toString());
-
+  // Print object data in HEX format
+  Serial.print("bob data: ");
   char *ptr = bob.data();
   for (int i = 0; i < bob.len(); i++, ptr++) {
     Serial.print("0x");
@@ -33,6 +34,9 @@ void loop() {
     Serial.print(" ");
     if ((i + 1) % 0x8 == 0) Serial.println();
   }
-  // put your main code here, to run repeatedly:
-  while (1);
+
+}
+
+void loop() {
+  // Do nothing
 }

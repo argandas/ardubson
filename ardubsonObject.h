@@ -8,14 +8,25 @@
   http://bsonspec.org/spec.html
 */
 
-#ifndef ardubson_h
-#define ardubson_h
+#ifndef ardubson_object_h
+#define ardubson_object_h
 
 #include "Arduino.h"
 #include "ardubsonTypes.h"
 #include "ardubsonElement.h"
 #include "ardubsonObjBuilder.h"
-#include "ardubsonObject.h"
+
+class BSONObject
+{
+  public:
+    BSONObject(char* data);
+    char* jsonString(void);
+    char* rawData(void);
+    int len(void);
+
+  private:
+    char _data[BSON_BUFF_SIZE];
+    char _jsonStr[128];
+};
 
 #endif
-

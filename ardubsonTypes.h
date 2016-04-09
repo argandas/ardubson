@@ -1,3 +1,5 @@
+#define BSON_BUFF_SIZE  1024
+
 #define BSON_EOO        0x00 // \x00 EOO: End-Of-Object
 #define BSON_NULL_BYTE  0x00 // \x00 NULL terminator
 #define BSON_MINKEY     0xFF // \xFF Min key

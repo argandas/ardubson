@@ -4,28 +4,19 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"
 #include "ardubson.h"
-#include "ardubsonTypes.h"
 
 // Constructor /////////////////////////////////////////////////////////////////
-// Function that handles the creation and setup of instances
 
 BSONObjBuilder::BSONObjBuilder(void) : _idx(4)
 {
   // Fill buffer with 0xFF
-  for (int i = 0; i < 1024; i++) {
+  for (int i = 0; i < BSON_BUFF_SIZE; i++) {
     _data[i] = 0x7F;
   }
 }
 
-char* BSONObjBuilder::data(void)
-{
-  return (char*)&_data;
-}
-
 // Public Methods //////////////////////////////////////////////////////////////
-// Functions available in Wiring sketches, this library, and other libraries
 
 BSONObjBuilder& BSONObjBuilder::append(char *key, char *value)
 {
@@ -68,36 +59,14 @@ BSONObjBuilder& BSONObjBuilder::append(char *key, int64_t value)
   appendNum(value);
 }
 
-char* BSONObjBuilder::toString(void)
-{
-  //char *data = "{\"hello\":\"world\"}";
-  char *data;
-  uint32_t len = *(uint32_t *)&_data[0];
-  uint32_t off = 4;
-  while ((off + 1) < len) {
-    uint32_t type = *(char *)&_data[off++];
-    if (type == (uint32_t)BSON_TYPE_STRING) {
-      data = (char *)&_data[off];
-      break;
-    }
-    if (type == (uint32_t)BSON_TYPE_INT32) {
-      data = (char *)&_data[off];
-      break;
-    }
-  }
-  return data;
-}
-
-void BSONObjBuilder::obj(void)
+BSONObject BSONObjBuilder::obj(void)
 {
   appendNum((char) BSON_EOO);
   *(uint32_t *)&_data = _idx;
+  return BSONObject((char *)&_data);
 }
 
-int BSONObjBuilder::len(void)
-{
-  return (int)*(uint32_t *)&_data[0];
-}
+// Private Methods //////////////////////////////////////////////////////////////
 
 char* BSONObjBuilder::index(void)
 {
@@ -107,28 +76,28 @@ char* BSONObjBuilder::index(void)
 void BSONObjBuilder::appendNum(char value)
 {
   *(char *)index() = value;
-  _idx++;
+  _idx += sizeof(char);
   return;
 }
 
 void BSONObjBuilder::appendNum(uint32_t value)
 {
   *(uint32_t *)index() = value;
-  _idx += 4;
+  _idx += sizeof(uint32_t);
   return;
 }
 
 void BSONObjBuilder::appendNum(int32_t value)
 {
   *(int32_t *)index() = value;
-  _idx += 4;
+  _idx += sizeof(int32_t);
   return;
 }
 
 void BSONObjBuilder::appendNum(int64_t value)
 {
   *(int64_t *)index() = value;
-  _idx += 8;
+  _idx += sizeof(int64_t);
   return;
 }
 
