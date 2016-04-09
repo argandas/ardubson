@@ -1,11 +1,10 @@
 /*
-  ardubson.h - Library for the BSON (Binary-JSON) format.
+  ardubson.h - Lightweight BSON (Binary-JSON) Library for Arduino.
   Created by Hugo Arganda (argandas), April 6, 2016.
   Released into the public domain.
-*/
-/*
-  Check BSON specification at: 
-  http://bsonspec.org/spec.html
+
+  For more information about BSON please refer to: 
+  http://bsonspec.org
 */
 
 #ifndef ardubson_h
@@ -18,4 +17,3 @@
 #include "ardubsonObject.h"
 
 #endif
-

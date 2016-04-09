@@ -4,7 +4,7 @@
   Released into the public domain.
 */
 /*
-  Check BSON specification at: 
+  Check BSON specification at:
   http://bsonspec.org/spec.html
 */
 
@@ -20,12 +20,14 @@ class BSONObject
 {
   public:
     BSONObject(char* data);
+    BSONElement getField(const char *key);
     char* jsonString(void);
     char* rawData(void);
+
     int len(void);
 
   private:
-    char _data[BSON_BUFF_SIZE];
+    char _objData[BSON_BUFF_SIZE];
     char _jsonStr[128];
 };
 

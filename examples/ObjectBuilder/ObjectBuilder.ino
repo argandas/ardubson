@@ -16,27 +16,43 @@ void setup() {
 
   // Append an element to BSON Builder
   bob.append("hello", "world");
+  bob.append("number", 1990);
 
   // Generate BSON Object
-  bob.obj();
-
+  BSONObject bo = bob.obj();
   // Print object length
-  Serial.print("bob Len: ");
-  Serial.println(bob.len());
-
+  Serial.print("\r\nBSON Object data length: ");
+  Serial.println(bo.len());
   // Print object data in HEX format
-  Serial.print("bob data: ");
-  char *ptr = bob.data();
-  for (int i = 0; i < bob.len(); i++, ptr++) {
-    Serial.print("0x");
-    if (*ptr <= 0xF) Serial.print("0");
-    Serial.print(*ptr, HEX);
-    Serial.print(" ");
-    if ((i + 1) % 0x8 == 0) Serial.println();
-  }
+  Serial.println("BSON Object data: ");
+  printHex(bo.rawData(), bo.len());
 
+
+  BSONElement be = bo.getField("number");
+  Serial.print("\r\nBSON Element data length: ");
+  Serial.println(be.len());
+  // Print object data in HEX format
+  Serial.println("BSON Element data: ");
+  printHex(be.rawData(), be.len());
+  Serial.print("BSON Element data value: ");
+  Serial.println(be.getInt());
+
+  Serial.print("\r\nBSON Element string: ");
+  Serial.print(bo.getField("hello").getKey());
+  Serial.println(bo.getField("hello").getString());
 }
 
 void loop() {
   // Do nothing
+}
+
+void printHex(char* data, int len) {
+  for (int i = 0; i < len; i++, data++) {
+    Serial.print("0x");
+    if ((unsigned char)*data <= 0xF) Serial.print("0");
+    Serial.print((unsigned char)*data, HEX);
+    Serial.print(" ");
+    if ((i + 1) % 0x8 == 0) Serial.println();
+  }
+  Serial.println();
 }

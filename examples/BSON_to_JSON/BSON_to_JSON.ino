@@ -20,10 +20,10 @@ void setup() {
   bob.append("boolean", false);
 
   // Generate BSON Object
-  bob.obj();
+  BSONObject bo = bob.obj();
 
   // Get string object
-  char *json = bob.JSON();
+  char *json = bo.jsonString();
 
   // Print BSON in JSON format
   Serial.print("JSON: ");

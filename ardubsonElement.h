@@ -4,7 +4,7 @@
   Released into the public domain.
 */
 /*
-  Check BSON specification at: 
+  Check BSON specification at:
   http://bsonspec.org/spec.html
 */
 
@@ -18,6 +18,13 @@ class BSONElement
 {
   public:
     BSONElement(void);
+    BSONElement(char* data);
+    // Methods
+    void put(const void * source, int size);
+    char* rawData();
+    int len();
+    bool exists(void);
+    // Create new element
     BSONElement& Key(char *key);
     BSONElement& Value(char *value);
     BSONElement& Value(char *value, int size);
@@ -25,25 +32,21 @@ class BSONElement
     BSONElement& Value(int value);
     BSONElement& Value(int32_t value);
     BSONElement& Value(int64_t value);
-    // Methods
+    // Get attibutes
     char getType(void);
-    char* getKey(char *buff);
-    char* getString(void);
-    int getInt(void);
-    bool getBool(void);
-    char* rawData();
-    int size();
-    bool exists(void);
+    char* getKey(void);
     // Assertions
     bool isBool(void);
     bool isInt(void);
     bool isString(void);
+    // Get values
+    char* getString(void);
+    int getInt(void);
+    bool getBool(void);
 
   private:
-    char _type;
-    char _data[32];
-    char _key[32];
-    int _size;
+    char _element[128];
+    int _len;
 };
 
 #endif

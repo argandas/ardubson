@@ -11,19 +11,34 @@
 BSONObjBuilder::BSONObjBuilder(void) : _idx(4)
 {
   // Fill buffer with 0xFF
-  for (int i = 0; i < BSON_BUFF_SIZE; i++) {
+  for (int i = 0; i < BSON_BUFF_SIZE; i++)
+  {
     _data[i] = 0x7F;
+  }
+}
+
+BSONObjBuilder::BSONObjBuilder(char *data, int len)
+{
+  int size = *(uint32_t *)&_data;
+  // Check incoming size vs len
+  if (size == len)
+  {
+    memcpy(_data, data, size);
+    _idx = len;
   }
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, char *value)
+// Append string
+BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
 {
-  return append(key, value, strlen(value)+1);
+  return append(key, value, strlen(value) + 1);
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, char *value, int size)
+
+// Append string with a defined len
+BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
 {
   appendNum((char) BSON_TYPE_STRING);
   appendStr(key);
@@ -32,19 +47,22 @@ BSONObjBuilder& BSONObjBuilder::append(char *key, char *value, int size)
   return *this;
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, bool value) {
+// Append boolean
+BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value) {
   appendNum((char) BSON_TYPE_BOOLEAN);
   appendStr(key);
   appendNum((char)(value ? 1 : 0));
   return *this;
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, int value)
+// Append int, the value will be saved as int32 type
+BSONObjBuilder& BSONObjBuilder::append(const char *key, int value)
 {
   return append(key, (int32_t)value);
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, int32_t value)
+// Append int32
+BSONObjBuilder& BSONObjBuilder::append(const char *key, int32_t value)
 {
   appendNum((char) BSON_TYPE_INT32);
   appendStr(key);
@@ -52,17 +70,20 @@ BSONObjBuilder& BSONObjBuilder::append(char *key, int32_t value)
   return *this;
 }
 
-BSONObjBuilder& BSONObjBuilder::append(char *key, int64_t value)
+// Append int64
+BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
 {
   appendNum((char) BSON_TYPE_INT64);
   appendStr(key);
   appendNum(value);
 }
 
+// Generate BSON Object, this finishes the BSON Object builder,
+// no more elements should be added after this.
 BSONObject BSONObjBuilder::obj(void)
 {
-  appendNum((char) BSON_EOO);
-  *(uint32_t *)&_data = _idx;
+  appendNum((char) BSON_EOO);  // EOO
+  *(uint32_t *)&_data = _idx;  // Add frame length
   return BSONObject((char *)&_data);
 }
 
@@ -101,9 +122,9 @@ void BSONObjBuilder::appendNum(int64_t value)
   return;
 }
 
-void BSONObjBuilder::appendStr(char *data)
+void BSONObjBuilder::appendStr(const char *data)
 {
-  for (;*data != BSON_NULL_BYTE; data++) {
+  for (; *data != BSON_NULL_BYTE; data++) {
     appendNum((char) *data);
   }
   appendNum((char) BSON_NULL_BYTE);

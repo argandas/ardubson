@@ -4,7 +4,7 @@
   Released into the public domain.
 */
 /*
-  Check BSON specification at: 
+  Check BSON specification at:
   http://bsonspec.org/spec.html
 */
 
@@ -23,12 +23,12 @@ class BSONObjBuilder
     BSONObjBuilder(char *data, int len);
     // Append BSON elements
     BSONObjBuilder& append(BSONElement element);
-    BSONObjBuilder& append(char *key, char *value);
-    BSONObjBuilder& append(char *key, char *value, int size);
-    BSONObjBuilder& append(char *key, bool value);
-    BSONObjBuilder& append(char *key, int value);
-    BSONObjBuilder& append(char *key, int32_t value);
-    BSONObjBuilder& append(char *key, int64_t value);
+    BSONObjBuilder& append(const char *key, char *value);
+    BSONObjBuilder& append(const char *key, char *value, int size);
+    BSONObjBuilder& append(const char *key, bool value);
+    BSONObjBuilder& append(const char *key, int value);
+    BSONObjBuilder& append(const char *key, int32_t value);
+    BSONObjBuilder& append(const char *key, int64_t value);
     // Create BSON Object
     BSONObject obj(void);
 
@@ -40,7 +40,7 @@ class BSONObjBuilder
     void appendNum(uint32_t value);
     void appendNum(int32_t value);
     void appendNum(int64_t value);
-    void appendStr(char *data);
+    void appendStr(const char *data);
 };
 
 #endif

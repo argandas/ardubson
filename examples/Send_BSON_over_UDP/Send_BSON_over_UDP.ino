@@ -23,8 +23,9 @@ unsigned int localPort = 2009;           // local port (change this depending on
 // UDP instance
 EthernetUDP Udp;
 
-// BSON Object builder
+// BSON Object & builder
 BSONObjBuilder bob;
+BSONObject bo;
 
 // setup the arduino and shields
 void setup() {
@@ -60,7 +61,7 @@ void setup() {
   bob.append("boolean", false);
 
   // Generate BSON Object
-  bob.obj();
+  bo = bob.obj();
 }
 
 // do tasks
@@ -68,7 +69,7 @@ void loop() {
   static int counter = 0;
   // send udp message
   Udp.beginPacket(destIp, destPort);
-  int n = Udp.write(bob.data(), bob.len());
+  int n = Udp.write(bo.rawData(), bo.len());
   Udp.endPacket();
 
   Serial.print("[");
