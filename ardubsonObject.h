@@ -14,17 +14,15 @@
 #include "Arduino.h"
 #include "ardubsonTypes.h"
 #include "ardubsonElement.h"
-#include "ardubsonObjBuilder.h"
 
 class BSONObject
 {
   public:
     BSONObject(char* data);
+    char* rawData(void);
+    int len(void);
     BSONElement getField(const char *key);
     char* jsonString(void);
-    char* rawData(void);
-
-    int len(void);
 
   private:
     char _objData[BSON_BUFF_SIZE];

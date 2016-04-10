@@ -23,15 +23,16 @@ class BSONElement
     void put(const void * source, int size);
     char* rawData();
     int len();
-    bool exists(void);
+    // TO-DO: bool exists(void);
     // Create new element
-    BSONElement& Key(char *key);
-    BSONElement& Value(char *value);
-    BSONElement& Value(char *value, int size);
-    BSONElement& Value(bool value);
+    BSONElement& Key(const char *key);
+    BSONElement& Value(const char *value);
+    BSONElement& Value(const char *value, int size);
+    // TO-DO: BSONElement& Value(bool value);
     BSONElement& Value(int value);
     BSONElement& Value(int32_t value);
     BSONElement& Value(int64_t value);
+    BSONElement& Value(bool value);
     // Get attibutes
     char getType(void);
     char* getKey(void);

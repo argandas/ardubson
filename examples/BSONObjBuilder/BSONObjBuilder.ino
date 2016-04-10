@@ -6,17 +6,18 @@
 
 #include <ardubson.h>
 
-// Create a BSON Builder
-BSONObjBuilder bob;
-
 void setup() {
   // Setup serial port
   Serial.begin(9600);
   Serial.println("BSON Object Builder example");
-
+  
+  // Create a BSON Builder
+  BSONObjBuilder bob;
   // Append an element to BSON Builder
   bob.append("hello", "world");
   bob.append("number", 1990);
+  // Or try inline notation
+  bob.append("one", 1).append("two", 2).append("three", 3);
 
   // Generate BSON Object
   BSONObject bo = bob.obj();
@@ -27,18 +28,18 @@ void setup() {
   Serial.println("BSON Object data: ");
   printHex(bo.rawData(), bo.len());
 
-
+  // Get BSON Object element
   BSONElement be = bo.getField("number");
   Serial.print("\r\nBSON Element data length: ");
   Serial.println(be.len());
-  // Print object data in HEX format
-  Serial.println("BSON Element data: ");
+  // Print element data in HEX format
+  Serial.println("BSON Element data (raw): ");
   printHex(be.rawData(), be.len());
   Serial.print("BSON Element data value: ");
   Serial.println(be.getInt());
 
+  // Get element data inline
   Serial.print("\r\nBSON Element string: ");
-  Serial.print(bo.getField("hello").getKey());
   Serial.println(bo.getField("hello").getString());
 }
 

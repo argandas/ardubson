@@ -10,8 +10,8 @@
 
 BSONObject::BSONObject(char* data)
 {
-  int size = *(uint32_t *)&data;
-  if (size <= BSON_BUFF_SIZE)
+  int size = *(uint32_t *)data;
+  if ((size >= 0) && (size <= BSON_BUFF_SIZE))
   {
     memcpy(_objData, data, size);
   }

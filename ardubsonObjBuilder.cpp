@@ -8,23 +8,22 @@
 
 // Constructor /////////////////////////////////////////////////////////////////
 
-BSONObjBuilder::BSONObjBuilder(void) : _idx(4)
+BSONObjBuilder::BSONObjBuilder(void) : _idx(4),  _done(false)
 {
   // Fill buffer with 0xFF
   for (int i = 0; i < BSON_BUFF_SIZE; i++)
   {
-    _data[i] = 0x7F;
+    _data[i] = BSON_NULL_BYTE;
   }
 }
 
-BSONObjBuilder::BSONObjBuilder(char *data, int len)
+BSONObjBuilder::BSONObjBuilder(char *data, int len) : _done(true)
 {
-  int size = *(uint32_t *)&_data;
+  int size = *(uint32_t *)data;
   // Check incoming size vs len
   if (size == len)
   {
     memcpy(_data, data, size);
-    _idx = len;
   }
 }
 
@@ -82,16 +81,20 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
 // no more elements should be added after this.
 BSONObject BSONObjBuilder::obj(void)
 {
-  appendNum((char) BSON_EOO);  // EOO
-  *(uint32_t *)&_data = _idx;  // Add frame length
-  return BSONObject((char *)&_data);
+  if (!_done) 
+  {
+    appendNum((char) BSON_EOO);  // EOO
+    *(uint32_t *)&_data = _idx;  // Add frame length
+    _done = true;
+  }
+  return BSONObject((char *)_data);
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
 
 char* BSONObjBuilder::index(void)
 {
-  return (&_data[0]) + _idx;
+  return (char *)_data + _idx;
 }
 
 void BSONObjBuilder::appendNum(char value)

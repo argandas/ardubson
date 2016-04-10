@@ -6,18 +6,18 @@
 
 #include <ardubson.h>
 
-// Create a BSON Builder
-BSONObjBuilder bob;
-
 void setup() {
   // Setup serial port
   Serial.begin(9600);
   Serial.println("BSON to JSON example");
 
+  // Create a BSON Builder
+  BSONObjBuilder bob;
+
   // Append elements to BSON Builder
   bob.append("string", "2");
   bob.append("int", 4);
-  bob.append("boolean", false);
+  bob.append("boolean", true);
 
   // Generate BSON Object
   BSONObject bo = bob.obj();
