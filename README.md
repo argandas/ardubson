@@ -3,7 +3,7 @@ Lightweight BSON Library for Arduino
 
 ## Status
 
-This is a work in progress, you should not use this library until the first official release.
+This is a work in progress, please download the library from the [releases](https://github.com/argandas/ardubson/releases) page.
 
 ## Getting started
 
