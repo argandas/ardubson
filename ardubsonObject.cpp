@@ -134,7 +134,7 @@ char* BSONObject::jsonString(void)
         strcat(data, "\"");
         off += sz;
       }
-      else if (type == (uint32_t)BSON_TYPE_INT32)
+      else if (type == (char)BSON_TYPE_INT32)
       {
         // Get value
         char buff [12];
@@ -143,7 +143,7 @@ char* BSONObject::jsonString(void)
         strcat(data, buff);
         off += sizeof(val);
       }
-      else if (type == (uint32_t)BSON_TYPE_BOOLEAN)
+      else if (type == (char)BSON_TYPE_BOOLEAN)
       {
         // Get value
         char val = *(char *)&_objData[off];
