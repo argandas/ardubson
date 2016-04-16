@@ -29,12 +29,33 @@ BSONObjBuilder::BSONObjBuilder(char *data, int len) : _done(true)
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-// Append string
+// Append String object
+// Key(String) & Value(String)
+BSONObjBuilder& BSONObjBuilder::append(String key, String value)
+{
+  return append((char *)key.c_str(), (char *)value.c_str());
+}
+
+// Append char* object
+// Key(String) & Value(char*)
+BSONObjBuilder& BSONObjBuilder::append(String key, char *value)
+{
+  return append((char *)key.c_str(), value);
+}
+
+// Append String object
+// Key(char*) & Value(String)
+BSONObjBuilder& BSONObjBuilder::append(const char *key, String value)
+{
+  return append(key, (char *)value.c_str());
+}
+
+// Append string (char*)
+// Key(char*) & Value(char*)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
 {
   return append(key, value, strlen(value) + 1);
 }
-
 
 // Append string with a defined len
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
@@ -47,11 +68,25 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
 }
 
 // Append boolean
+// Key(string) & Value(bool)
+BSONObjBuilder& BSONObjBuilder::append(String key, bool value)
+{
+  return append((char *)key.c_str(), value);
+}
+
+// Append boolean
+// Key(char *) & Value(bool)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value) {
   appendNum((char) BSON_TYPE_BOOLEAN);
   appendStr(key);
   appendNum((char)(value ? 1 : 0));
   return *this;
+}
+
+// Append int, the value will be saved as int32 type
+BSONObjBuilder& BSONObjBuilder::append(String key, int value)
+{
+  return append((char *)key.c_str(), (int32_t)value);
 }
 
 // Append int, the value will be saved as int32 type
@@ -81,7 +116,7 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
 // no more elements should be added after this.
 BSONObject BSONObjBuilder::obj(void)
 {
-  if (!_done) 
+  if (!_done)
   {
     appendNum((char) BSON_EOO);  // EOO
     *(uint32_t *)&_data = _idx;  // Add frame length

@@ -23,10 +23,17 @@ class BSONObjBuilder
     BSONObjBuilder(char *data, int len);
     // Append BSON elements
     // TO-DO: BSONObjBuilder& append(BSONElement element);
+    BSONObjBuilder& append(String key, String value);
+    BSONObjBuilder& append(String key, char *value);
+    BSONObjBuilder& append(const char *key, String value);
     BSONObjBuilder& append(const char *key, char *value);
     BSONObjBuilder& append(const char *key, char *value, int size);
+    // Append bool
     BSONObjBuilder& append(const char *key, bool value);
+    BSONObjBuilder& append(String key, bool value);
+    // Append int
     BSONObjBuilder& append(const char *key, int value);
+    BSONObjBuilder& append(String key, int value);
     BSONObjBuilder& append(const char *key, int32_t value);
     BSONObjBuilder& append(const char *key, int64_t value);
     // Create BSON Object
