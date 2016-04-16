@@ -6,20 +6,31 @@
 # Datatypes (KEYWORD1)
 #######################################
 
+ardubson	KEYWORD1
 BSONObjBuilder	KEYWORD1
 BSONObject	KEYWORD1
+BSONElement	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 append	KEYWORD2
-toString	KEYWORD2
-data	KEYWORD2
 obj	KEYWORD2
+rawData	KEYWORD2
 len	KEYWORD2
-appendNum	KEYWORD2
-appendStr	KEYWORD2
+getField	KEYWORD2
+jsonString	KEYWORD2
+Key	KEYWORD2
+Value	KEYWORD2
+getType	KEYWORD2
+getKey	KEYWORD2
+isBool	KEYWORD2
+isInt	KEYWORD2
+isString	KEYWORD2
+getString	KEYWORD2
+getInt	KEYWORD2
+getBool	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
