@@ -25,7 +25,7 @@ class BSONObject
     char* jsonString(void);
 
   private:
-    char _objData[BSON_BUFF_SIZE];
+    char *_objData;
     char _jsonStr[128];
 };
 

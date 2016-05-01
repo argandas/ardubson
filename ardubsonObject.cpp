@@ -13,7 +13,7 @@ BSONObject::BSONObject(char* data)
   int size = *(uint32_t *)data;
   if ((size >= 0) && (size <= BSON_BUFF_SIZE))
   {
-    memcpy(_objData, data, size);
+    _objData = data;
   }
 }
 
@@ -21,29 +21,29 @@ BSONObject::BSONObject(char* data)
 
 char* BSONObject::rawData(void)
 {
-  return (char *)&_objData;
+  return (char *)_objData;
 }
 
 int BSONObject::len(void)
 {
-  return (int)(*(uint32_t *)&_objData);
+  return (int)(*(uint32_t *)_objData);
 }
 
 BSONElement BSONObject::getField(const char *fieldName)
 {
   BSONElement be;
 
-  uint32_t len = *(uint32_t *)&_objData;
+  uint32_t len = *(uint32_t *)_objData;
   uint32_t off = sizeof(uint32_t);
 
   while ((off + 1) < len) {
     // Get next element data type
-    char type = *(char *)&_objData[off++];
+    char type = *(char *)_objData[off++];
     // Check data type range
     if ((type > (char)BSON_MINKEY) && (type < (char)BSON_MAXKEY))
     {
       // Get element key
-      char *key = (char *)&_objData[off];
+      char *key = (char *)_objData[off];
       off += strlen(key) + 1;
       // Check key
       if (strcmp(fieldName, key) == 0)
@@ -55,10 +55,10 @@ BSONElement BSONObject::getField(const char *fieldName)
         if (type == (char)BSON_TYPE_STRING)
         {
           // Get string size
-          uint32_t sz = *(uint32_t *)&_objData[off];
+          uint32_t sz = *(uint32_t *)_objData[off];
           off += sizeof(sz);
           // Get string value
-          char *val = (char *)&_objData[off];
+          char *val = (char *)_objData[off];
           off += sz;
           // Save string size & value
           be.put(&sz, sizeof(sz));
@@ -67,7 +67,7 @@ BSONElement BSONObject::getField(const char *fieldName)
         else if (type == (uint32_t)BSON_TYPE_INT32)
         {
           // Get value
-          int32_t val = *(int32_t *)&_objData[off];
+          int32_t val = *(int32_t *)_objData[off];
           off += sizeof(val);
           // Save value
           be.put(&val, sizeof(val));
@@ -75,7 +75,7 @@ BSONElement BSONObject::getField(const char *fieldName)
         else if (type == (uint32_t)BSON_TYPE_BOOLEAN)
         {
           // Get value
-          char val = *(char *)&_objData[off];
+          char val = *(char *)_objData[off];
           off += sizeof(val);
           // Save value
           be.put(&val, sizeof(val));
@@ -104,19 +104,19 @@ char* BSONObject::jsonString(void)
   strcpy(data, "{");
 
   bool first = true;
-  uint32_t len = *(uint32_t *)&_objData;
+  uint32_t len = *(uint32_t *)_objData;
   uint32_t off = sizeof(uint32_t);
 
   while ((off + 1) < len) {
     // Get next element data type
-    char type = *(char *)&_objData[off++];
+    char type = *(char *)_objData[off++];
     // Check data type range
     if ((type > (char)BSON_MINKEY) && (type < (char)BSON_MAXKEY))
     {
       // Add trailing comma
       if (!first) strcat(data, ", ");
       // Get element key
-      char *key = (char *)&_objData[off];
+      char *key = (char *)_objData[off];
       strcat(data, "\"");
       strcat(data, key);
       strcat(data, "\":");
@@ -125,10 +125,10 @@ char* BSONObject::jsonString(void)
       if (type == (char)BSON_TYPE_STRING)
       {
         // Get string size
-        uint32_t sz = *(uint32_t *)&_objData[off];
+        uint32_t sz = *(uint32_t *)_objData[off];
         off += sizeof(uint32_t);
         // Get value
-        char *val = (char *)&_objData[off];
+        char *val = (char *)_objData[off];
         strcat(data, "\"");
         strcat(data, val);
         strcat(data, "\"");
@@ -138,7 +138,7 @@ char* BSONObject::jsonString(void)
       {
         // Get value
         char buff [12];
-        int32_t val = *(int32_t *)&_objData[off];
+        int32_t val = *(int32_t *)_objData[off];
         itoa(val, buff, 10);
         strcat(data, buff);
         off += sizeof(val);
@@ -146,7 +146,7 @@ char* BSONObject::jsonString(void)
       else if (type == (char)BSON_TYPE_BOOLEAN)
       {
         // Get value
-        char val = *(char *)&_objData[off];
+        char val = *(char *)_objData[off];
         if (val == 0x1) strcat(data, "true");
         else strcat(data, "false");
         off += sizeof(val);
