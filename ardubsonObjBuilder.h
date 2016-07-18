@@ -23,32 +23,29 @@ class BSONObjBuilder
     BSONObjBuilder(char *data, int len);
     // Append BSON elements
     // TO-DO: BSONObjBuilder& append(BSONElement element);
-    BSONObjBuilder& append(String key, String value);
-    BSONObjBuilder& append(String key, char *value);
-    BSONObjBuilder& append(const char *key, String value);
+    // Append string
     BSONObjBuilder& append(const char *key, char *value);
     BSONObjBuilder& append(const char *key, char *value, int size);
     // Append bool
     BSONObjBuilder& append(const char *key, bool value);
-    BSONObjBuilder& append(String key, bool value);
     // Append int
     BSONObjBuilder& append(const char *key, int value);
-    BSONObjBuilder& append(String key, int value);
     BSONObjBuilder& append(const char *key, int32_t value);
     BSONObjBuilder& append(const char *key, int64_t value);
     // Create BSON Object
     BSONObject obj(void);
+    void reset(void);
 
   private:
     char _data[BSON_BUFF_SIZE];
     uint32_t _idx;
     bool _done;
     char* index(void);
-    void appendNum(char value);
-    void appendNum(uint32_t value);
-    void appendNum(int32_t value);
-    void appendNum(int64_t value);
-    void appendStr(const char *data);
+    uint8_t appendNum(char value);
+    uint8_t appendNum(uint32_t value);
+    uint8_t appendNum(int32_t value);
+    uint8_t appendNum(int64_t value);
+    uint8_t appendStr(const char *data);
 };
 
 #endif

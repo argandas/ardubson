@@ -10,18 +10,15 @@
 
 BSONObjBuilder::BSONObjBuilder(void) : _idx(4),  _done(false)
 {
-  // Fill buffer with 0xFF
-  for (int i = 0; i < BSON_BUFF_SIZE; i++)
-  {
-    _data[i] = BSON_NULL_BYTE;
-  }
+  // Fill buffer with 0x00
+  memset(&_data, BSON_NULL_BYTE, BSON_BUFF_SIZE);
 }
 
 BSONObjBuilder::BSONObjBuilder(char *data, int len) : _done(true)
 {
   int size = *(uint32_t *)data;
   // Check incoming size vs len
-  if (size == len)
+  if ((size == len) && (BSON_BUFF_SIZE > len))
   {
     memcpy(_data, data, size);
   }
@@ -29,64 +26,43 @@ BSONObjBuilder::BSONObjBuilder(char *data, int len) : _done(true)
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-// Append String object
-// Key(String) & Value(String)
-BSONObjBuilder& BSONObjBuilder::append(String key, String value)
-{
-  return append((char *)key.c_str(), (char *)value.c_str());
-}
-
-// Append char* object
-// Key(String) & Value(char*)
-BSONObjBuilder& BSONObjBuilder::append(String key, char *value)
-{
-  return append((char *)key.c_str(), value);
-}
-
-// Append String object
-// Key(char*) & Value(String)
-BSONObjBuilder& BSONObjBuilder::append(const char *key, String value)
-{
-  return append(key, (char *)value.c_str());
-}
-
 // Append string (char*)
-// Key(char*) & Value(char*)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
 {
   return append(key, value, strlen(value) + 1);
 }
 
-// Append string with a defined len
+// Append string (char*) with a defined length
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
 {
-  appendNum((char) BSON_TYPE_STRING);
-  appendStr(key);
-  appendNum((int32_t) size);
-  appendStr(value);
+  uint8_t ret = appendNum((char) BSON_TYPE_STRING);
+  if (true == ret)
+  {
+    ret &= appendStr(key);
+    if (true == ret)
+    {
+      ret &= appendNum((int32_t) size);
+      if (true == ret)
+      {
+        ret &= appendStr(value);
+      }
+    }
+  }
   return *this;
 }
 
 // Append boolean
-// Key(string) & Value(bool)
-BSONObjBuilder& BSONObjBuilder::append(String key, bool value)
-{
-  return append((char *)key.c_str(), value);
-}
-
-// Append boolean
-// Key(char *) & Value(bool)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value) {
-  appendNum((char) BSON_TYPE_BOOLEAN);
-  appendStr(key);
-  appendNum((char)(value ? 1 : 0));
+  uint8_t ret = appendNum((char) BSON_TYPE_BOOLEAN);
+  if (true == ret)
+  {
+    ret &= appendStr(key);
+    if (true == ret)
+    {
+      ret &= appendNum((char)(value ? 1 : 0));
+    }
+  }
   return *this;
-}
-
-// Append int, the value will be saved as int32 type
-BSONObjBuilder& BSONObjBuilder::append(String key, int value)
-{
-  return append((char *)key.c_str(), (int32_t)value);
 }
 
 // Append int, the value will be saved as int32 type
@@ -98,18 +74,31 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, int value)
 // Append int32
 BSONObjBuilder& BSONObjBuilder::append(const char *key, int32_t value)
 {
-  appendNum((char) BSON_TYPE_INT32);
-  appendStr(key);
-  appendNum(value);
+  uint8_t ret = appendNum((char) BSON_TYPE_INT32);
+  if (true == ret)
+  {
+    ret &= appendStr(key);
+    if (true == ret)
+    {
+      ret &= appendNum(value);
+    }
+  }
   return *this;
 }
 
 // Append int64
 BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
 {
-  appendNum((char) BSON_TYPE_INT64);
-  appendStr(key);
-  appendNum(value);
+  uint8_t ret = appendNum((char) BSON_TYPE_INT64);
+  if (true == ret)
+  {
+    ret &= appendStr(key);
+    if (true == ret)
+    {
+      ret &= appendNum(value);
+    }
+  }
+  return *this;
 }
 
 // Generate BSON Object, this finishes the BSON Object builder,
@@ -125,6 +114,16 @@ BSONObject BSONObjBuilder::obj(void)
   return BSONObject((char *)_data);
 }
 
+// Reset (clean) BSON Object Builder buffer
+void BSONObjBuilder::reset(void)
+{
+  // Fill buffer with 0x00
+  memset(&_data, BSON_NULL_BYTE, BSON_BUFF_SIZE);
+  _done = false;
+  _idx = 4;
+  return;
+}
+
 // Private Methods //////////////////////////////////////////////////////////////
 
 char* BSONObjBuilder::index(void)
@@ -132,39 +131,67 @@ char* BSONObjBuilder::index(void)
   return (char *)_data + _idx;
 }
 
-void BSONObjBuilder::appendNum(char value)
+uint8_t BSONObjBuilder::appendNum(char value)
 {
-  *(char *)index() = value;
-  _idx += sizeof(char);
-  return;
-}
-
-void BSONObjBuilder::appendNum(uint32_t value)
-{
-  *(uint32_t *)index() = value;
-  _idx += sizeof(uint32_t);
-  return;
-}
-
-void BSONObjBuilder::appendNum(int32_t value)
-{
-  *(int32_t *)index() = value;
-  _idx += sizeof(int32_t);
-  return;
-}
-
-void BSONObjBuilder::appendNum(int64_t value)
-{
-  *(int64_t *)index() = value;
-  _idx += sizeof(int64_t);
-  return;
-}
-
-void BSONObjBuilder::appendStr(const char *data)
-{
-  for (; *data != BSON_NULL_BYTE; data++) {
-    appendNum((char) *data);
+  uint8_t ret = false;
+  if(BSON_BUFF_SIZE > (_idx + sizeof(char)))
+  {
+    *(char *)index() = value;
+    _idx += sizeof(char);
+    ret = true;
   }
-  appendNum((char) BSON_NULL_BYTE);
-  return;
+  return ret;
+}
+
+uint8_t BSONObjBuilder::appendNum(uint32_t value)
+{
+  uint8_t ret = false;
+  if(BSON_BUFF_SIZE > (_idx + sizeof(uint32_t)))
+  {
+    *(uint32_t *)index() = value;
+    _idx += sizeof(uint32_t);
+    ret = true;
+  }
+  return ret;
+}
+
+uint8_t BSONObjBuilder::appendNum(int32_t value)
+{
+  uint8_t ret = false;
+  if(BSON_BUFF_SIZE > (_idx + sizeof(int32_t)))
+  {
+    *(int32_t *)index() = value;
+    _idx += sizeof(int32_t);
+    ret = true;
+  }
+  return ret;
+}
+
+uint8_t BSONObjBuilder::appendNum(int64_t value)
+{
+  uint8_t ret = false;
+  if(BSON_BUFF_SIZE > (_idx + sizeof(int64_t)))
+  {
+    *(int64_t *)index() = value;
+    _idx += sizeof(int64_t);
+    ret = true;
+  }
+  return ret;
+}
+
+uint8_t BSONObjBuilder::appendStr(const char *data)
+{
+  uint8_t ret = false;
+  if(BSON_BUFF_SIZE > (_idx + strlen(data) + 1))
+  {
+    ret = true;
+    for (; (*data != BSON_NULL_BYTE) && (true == ret); data++) {
+      ret &= appendNum((char) *data);
+    }
+    if (true == ret)
+    {
+      ret &= appendNum((char) BSON_NULL_BYTE);
+    }
+  }
+  return ret;
 }
