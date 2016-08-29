@@ -13,26 +13,26 @@
 
 #include "Arduino.h"
 #include "ardubsonTypes.h"
+#include "ardubsonConfig.h"
 
 class BSONElement
 {
   public:
     BSONElement(void);
-    BSONElement(char* data);
+    BSONElement& Fill(char* data, int len);
     // Methods
-    void put(const void * source, int size);
     char* rawData();
     int len();
-    // TO-DO: bool exists(void);
-    // Create new element
+    
+    /* Create new element */
     BSONElement& Key(const char *key);
-    BSONElement& Value(const char *value);
-    BSONElement& Value(const char *value, int size);
-    // TO-DO: BSONElement& Value(bool value);
-    BSONElement& Value(int value);
-    BSONElement& Value(int32_t value);
-    BSONElement& Value(int64_t value);
-    BSONElement& Value(bool value);
+    void Value(const char *value);
+    void Value(const char *value, int size);
+    void Value(int value);
+    void Value(int32_t value);
+    void Value(int64_t value);
+    void Value(bool value);
+
     // Get attibutes
     char getType(void);
     char* getKey(void);
@@ -46,7 +46,10 @@ class BSONElement
     bool getBool(void);
 
   private:
-    char _element[128];
+    bool put(const char* source, int size);
+    char* e_type;
+    char* e_name;
+    char e_data[BSON_ELM_SIZE];
     int _len;
 };
 

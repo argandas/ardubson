@@ -12,40 +12,38 @@
 #define ardubson_obj_builder_h
 
 #include "Arduino.h"
-#include "ardubsonTypes.h"
+#include "ardubsonDocument.h"
 #include "ardubsonElement.h"
 #include "ardubsonObject.h"
 
-class BSONObjBuilder
+class BSONObjBuilder: public BSONDocument
 {
   public:
+    /* Void constructor, create an empty BSON Object Builder */
     BSONObjBuilder(void);
+
+    /* Constructor, create an BSON Object Builder from a byte buffer */
     BSONObjBuilder(char *data, int len);
-    // Append BSON elements
-    // TO-DO: BSONObjBuilder& append(BSONElement element);
-    // Append string
+    
+    /* TODO: Append BSON elements */
+    BSONObjBuilder& append(BSONElement element);
+
+    /* Append C-string (Must be null terminated ) */
     BSONObjBuilder& append(const char *key, char *value);
+
+    /* Append Buffer as C-string */
     BSONObjBuilder& append(const char *key, char *value, int size);
-    // Append bool
+    
+    /* Append bool */
     BSONObjBuilder& append(const char *key, bool value);
-    // Append int
+
+    /* Append numbers */
     BSONObjBuilder& append(const char *key, int value);
     BSONObjBuilder& append(const char *key, int32_t value);
     BSONObjBuilder& append(const char *key, int64_t value);
-    // Create BSON Object
-    BSONObject obj(void);
-    void reset(void);
 
-  private:
-    char _data[BSON_BUFF_SIZE];
-    uint32_t _idx;
-    bool _done;
-    char* index(void);
-    uint8_t appendNum(char value);
-    uint8_t appendNum(uint32_t value);
-    uint8_t appendNum(int32_t value);
-    uint8_t appendNum(int64_t value);
-    uint8_t appendStr(const char *data);
+    /* Create BSON Object */
+    BSONObject obj(void);
 };
 
-#endif
+#endif /* ardubson_obj_builder_h */
