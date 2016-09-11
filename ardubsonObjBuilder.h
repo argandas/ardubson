@@ -1,12 +1,12 @@
 /*
-  ardubson.h - Library for the BSON (Binary-JSON) format.
-  Created by Hugo Arganda (argandas), April 6, 2016.
-  Released into the public domain.
-*/
+ ardubson.h - Library for the BSON (Binary-JSON) format.
+ Created by Hugo Arganda (argandas), April 6, 2016.
+ Released into the public domain.
+ */
 /*
-  Check BSON specification at:
-  http://bsonspec.org/spec.html
-*/
+ Check BSON specification at:
+ http://bsonspec.org/spec.html
+ */
 
 #ifndef ardubson_obj_builder_h
 #define ardubson_obj_builder_h
@@ -18,32 +18,32 @@
 
 class BSONObjBuilder: public BSONDocument
 {
-  public:
-    /* Void constructor, create an empty BSON Object Builder */
-    BSONObjBuilder(void);
+    public:
+        /* Void constructor, create an empty BSON Object Builder */
+        BSONObjBuilder(void);
 
-    /* Constructor, create an BSON Object Builder from a byte buffer */
-    BSONObjBuilder(char *data, int len);
-    
-    /* TODO: Append BSON elements */
-    BSONObjBuilder& append(BSONElement element);
+        /* Constructor, create an BSON Object Builder from a byte buffer */
+        BSONObjBuilder(char *data, int len);
 
-    /* Append C-string (Must be null terminated ) */
-    BSONObjBuilder& append(const char *key, char *value);
+        /* TODO: Append BSON elements */
+        BSONObjBuilder& append(BSONElement element);
 
-    /* Append Buffer as C-string */
-    BSONObjBuilder& append(const char *key, char *value, int size);
-    
-    /* Append bool */
-    BSONObjBuilder& append(const char *key, bool value);
+        /* Append C-string (Must be null terminated ) */
+        BSONObjBuilder& append(const char *key, char *value);
 
-    /* Append numbers */
-    BSONObjBuilder& append(const char *key, int value);
-    BSONObjBuilder& append(const char *key, int32_t value);
-    BSONObjBuilder& append(const char *key, int64_t value);
+        /* Append Buffer as C-string */
+        BSONObjBuilder& append(const char *key, char *value, int size);
 
-    /* Create BSON Object */
-    BSONObject obj(void);
+        /* Append bool */
+        BSONObjBuilder& append(const char *key, bool value);
+
+        /* Append numbers */
+        BSONObjBuilder& append(const char *key, int value);
+        BSONObjBuilder& append(const char *key, int32_t value);
+        BSONObjBuilder& append(const char *key, int64_t value);
+
+        /* Create BSON Object */
+        BSONObject obj(void);
 };
 
 #endif /* ardubson_obj_builder_h */

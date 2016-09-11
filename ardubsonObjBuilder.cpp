@@ -1,8 +1,8 @@
 /*
-  ardubson.h - Library for the BSON (Binary-JSON) format.
-  Created by Hugo Arganda (argandas), April 6, 2016.
-  Released into the public domain.
-*/
+ ardubson.h - Library for the BSON (Binary-JSON) format.
+ Created by Hugo Arganda (argandas), April 6, 2016.
+ Released into the public domain.
+ */
 
 #include "ardubsonObjBuilder.h"
 #include "ardubsonTypes.h"
@@ -12,23 +12,23 @@
 
 BSONObjBuilder::BSONObjBuilder(void)
 {
-  reset();
+    reset();
 }
 
 BSONObjBuilder::BSONObjBuilder(char *data, int len)
 {
-  int i = 0;
-  int size = 0;
-  reset();
-  size = *(uint32_t *)data;
-  if ((size == len) && (BSON_DOC_SIZE > len))
-  {
-    for(i = 0; i < len; i++)
+    int i = 0;
+    int size = 0;
+    reset();
+    size = *(uint32_t *) data;
+    if ((size == len) && (BSON_DOC_SIZE > len))
     {
-      appendNum(*data++);      
+        for (i = 0; i < len; i++)
+        {
+            appendNum(*data++);
+        }
+        _done = true;
     }
-    _done = true;
-  }
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -36,94 +36,95 @@ BSONObjBuilder::BSONObjBuilder(char *data, int len)
 // Append BSON Element (char*)
 BSONObjBuilder& BSONObjBuilder::append(BSONElement element)
 {
-  appendBSONElement(element);
-  return *this; 
+    appendBSONElement(element);
+    return *this;
 }
 
 // Append string (char*)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
 {
-  return append(key, value, strlen(value) + 1);
+    return append(key, value, strlen(value) + 1);
 }
 
 // Append string (char*) with a defined length
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
 {
-  uint8_t ret = appendNum((char) BSON_TYPE_STRING);
-  if (true == ret)
-  {
-    ret &= appendStr(key);
+    uint8_t ret = appendNum((char) BSON_TYPE_STRING);
     if (true == ret)
     {
-      ret &= appendNum((int32_t) size);
-      if (true == ret)
-      {
-        ret &= appendStr(value);
-      }
+        ret &= appendStr(key);
+        if (true == ret)
+        {
+            ret &= appendNum((int32_t) size);
+            if (true == ret)
+            {
+                ret &= appendStr(value);
+            }
+        }
     }
-  }
-  return *this;
+    return *this;
 }
 
 // Append boolean
-BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value) {
-  uint8_t ret = appendNum((char) BSON_TYPE_BOOLEAN);
-  if (true == ret)
-  {
-    ret &= appendStr(key);
+BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value)
+{
+    uint8_t ret = appendNum((char) BSON_TYPE_BOOLEAN);
     if (true == ret)
     {
-      ret &= appendNum((char)(value ? 1 : 0));
+        ret &= appendStr(key);
+        if (true == ret)
+        {
+            ret &= appendNum((char) (value ? 1 : 0));
+        }
     }
-  }
-  return *this;
+    return *this;
 }
 
 // Append int, the value will be saved as int32 type
 BSONObjBuilder& BSONObjBuilder::append(const char *key, int value)
 {
-  return append(key, (int32_t)value);
+    return append(key, (int32_t) value);
 }
 
 // Append int32
 BSONObjBuilder& BSONObjBuilder::append(const char *key, int32_t value)
 {
-  uint8_t ret = appendNum((char) BSON_TYPE_INT32);
-  if (true == ret)
-  {
-    ret &= appendStr(key);
+    uint8_t ret = appendNum((char) BSON_TYPE_INT32);
     if (true == ret)
     {
-      ret &= appendNum(value);
+        ret &= appendStr(key);
+        if (true == ret)
+        {
+            ret &= appendNum(value);
+        }
     }
-  }
-  return *this;
+    return *this;
 }
 
 // Append int64
 BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
 {
-  uint8_t ret = appendNum((char) BSON_TYPE_INT64);
-  if (true == ret)
-  {
-    ret &= appendStr(key);
+    uint8_t ret = appendNum((char) BSON_TYPE_INT64);
     if (true == ret)
     {
-      ret &= appendNum(value);
+        ret &= appendStr(key);
+        if (true == ret)
+        {
+            ret &= appendNum(value);
+        }
     }
-  }
-  return *this;
+    return *this;
 }
 
 // Generate BSON Object, this finishes the BSON Object builder,
 // no more elements should be added after this.
 BSONObject BSONObjBuilder::obj(void)
 {
-  if (!_done)
-  {
-    appendNum((char) BSON_EOO);  // EOO
-    *(uint32_t *)&_doc = _idx;  // Add frame length
-    _done = true;
-  }
-  return BSONObject((char *)_doc);
+    if (!_done)
+    {
+        appendNum((char) BSON_EOO); // EOO
+        *(uint32_t *) &_doc = _idx; // Add frame length
+        _done = true;
+    }
+    return BSONObject((char *) _doc);
 }
