@@ -4,27 +4,41 @@
   Released into the public domain.
 */
 
-#include "ardubson.h"
+#include "ardubsonObjBuilder.h"
+#include "ardubsonTypes.h"
+#include "ardubsonConfig.h"
 
 // Constructor /////////////////////////////////////////////////////////////////
 
-BSONObjBuilder::BSONObjBuilder(void) : _idx(4),  _done(false)
+BSONObjBuilder::BSONObjBuilder(void)
 {
-  // Fill buffer with 0x00
-  memset(&_data, BSON_NULL_BYTE, BSON_BUFF_SIZE);
+  reset();
 }
 
-BSONObjBuilder::BSONObjBuilder(char *data, int len) : _done(true)
+BSONObjBuilder::BSONObjBuilder(char *data, int len)
 {
-  int size = *(uint32_t *)data;
-  // Check incoming size vs len
-  if ((size == len) && (BSON_BUFF_SIZE > len))
+  int i = 0;
+  int size = 0;
+  reset();
+  size = *(uint32_t *)data;
+  if ((size == len) && (BSON_DOC_SIZE > len))
   {
-    memcpy(_data, data, size);
+    for(i = 0; i < len; i++)
+    {
+      appendNum(*data++);      
+    }
+    _done = true;
   }
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
+
+// Append BSON Element (char*)
+BSONObjBuilder& BSONObjBuilder::append(BSONElement element)
+{
+  appendBSONElement(element);
+  return *this; 
+}
 
 // Append string (char*)
 BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
@@ -108,90 +122,8 @@ BSONObject BSONObjBuilder::obj(void)
   if (!_done)
   {
     appendNum((char) BSON_EOO);  // EOO
-    *(uint32_t *)&_data = _idx;  // Add frame length
+    *(uint32_t *)&_doc = _idx;  // Add frame length
     _done = true;
   }
-  return BSONObject((char *)_data);
-}
-
-// Reset (clean) BSON Object Builder buffer
-void BSONObjBuilder::reset(void)
-{
-  // Fill buffer with 0x00
-  memset(&_data, BSON_NULL_BYTE, BSON_BUFF_SIZE);
-  _done = false;
-  _idx = 4;
-  return;
-}
-
-// Private Methods //////////////////////////////////////////////////////////////
-
-char* BSONObjBuilder::index(void)
-{
-  return (char *)_data + _idx;
-}
-
-uint8_t BSONObjBuilder::appendNum(char value)
-{
-  uint8_t ret = false;
-  if(BSON_BUFF_SIZE > (_idx + sizeof(char)))
-  {
-    *(char *)index() = value;
-    _idx += sizeof(char);
-    ret = true;
-  }
-  return ret;
-}
-
-uint8_t BSONObjBuilder::appendNum(uint32_t value)
-{
-  uint8_t ret = false;
-  if(BSON_BUFF_SIZE > (_idx + sizeof(uint32_t)))
-  {
-    *(uint32_t *)index() = value;
-    _idx += sizeof(uint32_t);
-    ret = true;
-  }
-  return ret;
-}
-
-uint8_t BSONObjBuilder::appendNum(int32_t value)
-{
-  uint8_t ret = false;
-  if(BSON_BUFF_SIZE > (_idx + sizeof(int32_t)))
-  {
-    *(int32_t *)index() = value;
-    _idx += sizeof(int32_t);
-    ret = true;
-  }
-  return ret;
-}
-
-uint8_t BSONObjBuilder::appendNum(int64_t value)
-{
-  uint8_t ret = false;
-  if(BSON_BUFF_SIZE > (_idx + sizeof(int64_t)))
-  {
-    *(int64_t *)index() = value;
-    _idx += sizeof(int64_t);
-    ret = true;
-  }
-  return ret;
-}
-
-uint8_t BSONObjBuilder::appendStr(const char *data)
-{
-  uint8_t ret = false;
-  if(BSON_BUFF_SIZE > (_idx + strlen(data) + 1))
-  {
-    ret = true;
-    for (; (*data != BSON_NULL_BYTE) && (true == ret); data++) {
-      ret &= appendNum((char) *data);
-    }
-    if (true == ret)
-    {
-      ret &= appendNum((char) BSON_NULL_BYTE);
-    }
-  }
-  return ret;
+  return BSONObject((char *)_doc);
 }

@@ -1,4 +1,5 @@
-#define BSON_BUFF_SIZE  64
+#ifndef ardubson_types_h
+#define ardubson_types_h
 
 #define BSON_EOO        0x00 // \x00 EOO: End-Of-Object
 #define BSON_NULL_BYTE  0x00 // \x00 NULL terminator
@@ -22,4 +23,6 @@
 #define BSON_TYPE_CODE_W_SCOPE  0x0F // \x0F
 #define BSON_TYPE_INT32         0x10 // \x10 int32 - 32-bit integer
 #define BSON_TYPE_TIMESTAMP     0x11 // \x11
-#define BSON_TYPE_INT64         0x12 // \x12 int64 - 64-bit integer
+#define BSON_TYPE_INT64         0x12 // \x12 int64 - 64-bit integer.
+
+#endif /* ardubson_types_h */

@@ -8,13 +8,16 @@
 
 // Constructor /////////////////////////////////////////////////////////////////
 
-BSONElement::BSONElement(void) : _len(0)
+BSONElement::BSONElement(void) : _len(1)
 {
-  // Fill buffer with NULL
-  for (int i = 0; i < 128; i++)
-  {
-    _element[i] = BSON_NULL_BYTE;
-  }
+  memset(e_data, NULL, BSON_ELM_SIZE);
+}
+
+BSONElement& BSONElement::Fill(char* data, int len)
+{
+  _len = 0;
+  put(data, len);
+  return *this;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -22,71 +25,68 @@ BSONElement::BSONElement(void) : _len(0)
 
 BSONElement& BSONElement::Key(const char* key)
 {
-  // Add NULL type
-  put(BSON_NULL_BYTE, sizeof(char));
-  // Add key
-  put(key, strlen(key)+1);
+  put(key, strlen(key) + 1);
   return *this;
 }
 
-BSONElement& BSONElement::Value(const char* value)
+void BSONElement::Value(const char* value)
 {
-  return Value(value, strlen(value) +1);
+  Value(value, strlen(value) +1);
 }
 
-BSONElement& BSONElement::Value(const char* value, int size)
+void BSONElement::Value(const char* value, int size)
 {
-  // Add data type
-  _element[0] = (char)BSON_TYPE_STRING;
-  // Add string size
-  put(&size, sizeof(uint32_t));
-  // Add string value
+  uint32_t val = (uint32_t)size;
+  /* Set data type */
+  e_data[0] = BSON_TYPE_STRING;
+  /* Add string size */
+  put((char*)&val, sizeof(uint32_t));
+  /* Add string value */
   put(value, size);
-  return *this;
 }
 
-BSONElement& BSONElement::Value(int value)
+void BSONElement::Value(int value)
 {
   return Value((int32_t) value);
 }
 
-BSONElement& BSONElement::Value(int32_t value)
+void BSONElement::Value(int32_t value)
 {
-  // Add data type
-  _element[0] = (char)BSON_TYPE_INT32;
-  // Add value
-  put(&value, sizeof(value));
-  return *this;
+  /* Set data type */
+  e_data[0] = BSON_TYPE_INT32;
+  /* Add value */
+  put((char *)&value, sizeof(int32_t));
 }
 
-BSONElement& BSONElement::Value(int64_t value)
+void BSONElement::Value(int64_t value)
 {
-  // Add data type
-  _element[0] = (char)BSON_TYPE_INT64;
-  // Add value
-  put(&value, sizeof(value));
-  return *this;
+  /* Set data type */
+  e_data[0] = BSON_TYPE_INT64;
+  /* Add value */
+  put((char *)&value, sizeof(int64_t));
 }
 
-BSONElement& BSONElement::Value(bool value)
+void BSONElement::Value(bool value)
 {
   char val = (value ? 1 : 0);
-  // Add data type
-  _element[0] = (char)BSON_TYPE_BOOLEAN;
-  // Add value
-  put(&val, sizeof(char));
-  return *this;
+  /* Set data type */
+  e_data[0] = BSON_TYPE_BOOLEAN;
+  /* Add value */
+  put((char *)&val, sizeof(char));
 }
 
-void BSONElement::put(const void* source, int size)
+bool BSONElement::put(const char* source, int size)
 {
-  memcpy(_element + _len, source, size);
-  _len += size;
+  if((_len + size) < BSON_ELM_SIZE)
+  {
+    memcpy(e_data + _len, source, size);
+    _len += size;
+  }
 }
 
 char* BSONElement::rawData(void)
 {
-  return (char *)&_element;
+  return (char *)&e_data;
 }
 
 int BSONElement::len(void)
@@ -96,12 +96,12 @@ int BSONElement::len(void)
 
 char BSONElement::getType(void)
 {
-  return _element[0];
+  return e_data[0];
 }
 
 char* BSONElement::getKey(void)
 {
-  return (char *)&_element[1];
+  return &e_data[1];
 }
 
 bool BSONElement::isString(void)
@@ -123,7 +123,9 @@ char* BSONElement::getString(void)
 {
   char* str = "NaS";
   if (isString())
-    str = (char *)&_element + sizeof(char) + strlen(getKey()) + 1 + sizeof(uint32_t);
+  {
+    str = (char *)&e_data + sizeof(char) + strlen(getKey()) + 1 + sizeof(uint32_t);
+  }
   return str;
 }
 
@@ -131,7 +133,9 @@ int BSONElement::getInt(void)
 {
   int32_t* val = 0;
   if (isInt())
-    val = (int32_t*)((char *)&_element + sizeof(char) + strlen(getKey()) + 1);
+  {
+    val = (int32_t*)((char *)&e_data + sizeof(char) + strlen(getKey()) + 1);
+  }
   return *val;
 }
 
@@ -139,7 +143,9 @@ bool BSONElement::getBool(void)
 {
   char* val = 0;
   if (isInt())
-    val = (char *)&_element + sizeof(char) + strlen(getKey()) + 1;
+  {
+    val = (char *)&e_data + sizeof(char) + strlen(getKey()) + 1;
+  }
   return (*val == 1 ? true : false);
 }
 

@@ -13,20 +13,32 @@
 
 #include "Arduino.h"
 #include "ardubsonTypes.h"
+#include "ardubsonConfig.h"
 #include "ardubsonElement.h"
 
 class BSONObject
 {
   public:
+
+    /* Build BSON Object from binary data */
     BSONObject(char* data);
+
+    /* API to BSON Object buffer */
     char* rawData(void);
-    int len(void);
+
+    /* Total number of bytes comprising the document */
+    int32_t len(void);
+
+    /* Get BSON Element by name */
     BSONElement getField(const char *key);
+
+    /* Print BSON document in JSON format */
     char* jsonString(void);
 
   private:
+    bool appendJSON(const char* data);
     char _objData[BSON_BUFF_SIZE];
-    char _jsonStr[128];
+    char _jsonStr[JSON_MAX_SIZE];
 };
 
 #endif
