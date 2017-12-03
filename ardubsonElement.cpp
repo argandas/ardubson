@@ -46,7 +46,7 @@ void BSONElement::Value(const char* value, int size)
     put(value, size);
 }
 
-void BSONElement::Value(int value)
+void BSONElement::Value(int16_t value)
 {
     return Value((int32_t) value);
 }

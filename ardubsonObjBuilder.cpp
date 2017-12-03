@@ -81,7 +81,7 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value)
 }
 
 // Append int, the value will be saved as int32 type
-BSONObjBuilder& BSONObjBuilder::append(const char *key, int value)
+BSONObjBuilder& BSONObjBuilder::append(const char *key, int16_t value)
 {
     return append(key, (int32_t) value);
 }
