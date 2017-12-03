@@ -133,7 +133,7 @@ char* BSONElement::getString(void)
 int BSONElement::getInt(void)
 {
     int32_t* val = 0;
-    if (isInt())
+    // if (isInt()) // TODO need some way to signal an error (avoid NULL pointer)
     {
         val = (int32_t*) ((char *) &e_data + sizeof(char) + strlen(getKey()) + 1);
     }
@@ -143,7 +143,7 @@ int BSONElement::getInt(void)
 bool BSONElement::getBool(void)
 {
     char* val = 0;
-    if (isInt())
+    // if (isInt()) // TODO need some way to signal an error (avoid NULL pointer)
     {
         val = (char *) &e_data + sizeof(char) + strlen(getKey()) + 1;
     }
