@@ -3,7 +3,7 @@
 
 #define BSON_EOO        0x00 // \x00 EOO: End-Of-Object
 #define BSON_NULL_BYTE  0x00 // \x00 NULL terminator
-#define BSON_MINKEY     0x00 // \xFF Min key
+#define BSON_MINKEY     0xFF // \xFF Min key
 #define BSON_MAXKEY     0x7F // \x7F Max key
 
 #define BSON_TYPE_NUMBER        0x01 // \x01 double - 64-bit binary floating point

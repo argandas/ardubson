@@ -45,69 +45,62 @@ BSONElement BSONObject::getField(const char *fieldName)
         e_data = (char *) &_objData[off];
         off++;
         e_len = 1;
-        // Check data type range
-        if ((type > (char) BSON_MINKEY) && (type < (char) BSON_MAXKEY))
-        {
-            // Get element key
-            char *key = (char *) &_objData[off];
-            off += strlen(key) + 1;
-            e_len += strlen(key) + 1;
-            // Check key
-            if (strcmp(fieldName, key) == 0)
-            {
-                // Save value
-                if (type == (char) BSON_TYPE_STRING)
-                {
-                    // Get string size
-                    uint32_t sz = 0;
-                    memcpy(&sz, &(_objData[off]), sizeof(uint32_t));
-                    off += sizeof(uint32_t);
-                    e_len += sizeof(uint32_t);
-                    // Get string value
-                    char *val = (char *) &_objData[off];
-                    off += sz;
-                    e_len += sz;
-                    break;
-                }
-                else if (type == (char) BSON_TYPE_INT32)
-                {
-                    // Get value
-                    int32_t val = *(int32_t *) &_objData[off];
-                    off += sizeof(int32_t);
-                    e_len += sizeof(int32_t);
-                    break;
-                }
-                else if (type == (char) BSON_TYPE_INT64)
-                {
-                    // Get value
-                    int64_t val = *(int64_t *) &_objData[off];
-                    off += sizeof(int64_t);
-                    e_len += sizeof(int64_t);
-                    break;
-                }
-                else if (type == (char) BSON_TYPE_BOOLEAN)
-                {
-                    // Get value
-                    char val = *(char *) &_objData[off];
-                    off += sizeof(char);
-                    e_len += sizeof(char);
-                    break;
-                }
-                // EOO
-                if ((uint32_t) BSON_EOO == _objData[off])
-                    break;
-            }
-            else
-            {
-                // Ignore incoming data
-            }
-            // break;
-        }
-        else
-        {
-            // Invalid type
-            break;
-        }
+
+
+      // Get element key
+      char *key = (char *) &_objData[off];
+      off += strlen(key) + 1;
+      e_len += strlen(key) + 1;
+      // Check key
+      if (strcmp(fieldName, key) == 0)
+      {
+          // Save value
+          if (type == (char) BSON_TYPE_STRING)
+          {
+              // Get string size
+              uint32_t sz = 0;
+              memcpy(&sz, &(_objData[off]), sizeof(uint32_t));
+              off += sizeof(uint32_t);
+              e_len += sizeof(uint32_t);
+              // Get string value
+              char *val = (char *) &_objData[off];
+              off += sz;
+              e_len += sz;
+              break;
+          }
+          else if (type == (char) BSON_TYPE_INT32)
+          {
+              // Get value
+              int32_t val = *(int32_t *) &_objData[off];
+              off += sizeof(int32_t);
+              e_len += sizeof(int32_t);
+              break;
+          }
+          else if (type == (char) BSON_TYPE_INT64)
+          {
+              // Get value
+              int64_t val = *(int64_t *) &_objData[off];
+              off += sizeof(int64_t);
+              e_len += sizeof(int64_t);
+              break;
+          }
+          else if (type == (char) BSON_TYPE_BOOLEAN)
+          {
+              // Get value
+              char val = *(char *) &_objData[off];
+              off += sizeof(char);
+              e_len += sizeof(char);
+              break;
+          }
+          // EOO
+          if ((uint32_t) BSON_EOO == _objData[off])
+              break;
+      }
+      else
+      {
+          // Ignore incoming data
+      }
+
     }
     return be.Fill(e_data, e_len);
 }
