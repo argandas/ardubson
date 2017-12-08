@@ -59,7 +59,8 @@ BSONElement BSONObject::getField(const char *fieldName)
                 if (type == (char) BSON_TYPE_STRING)
                 {
                     // Get string size
-                    uint32_t sz = *(uint32_t *) &_objData[off];
+                    uint32_t sz = 0;
+                    memcpy(&sz, &(_objData[off]), sizeof(uint32_t));
                     off += sizeof(uint32_t);
                     e_len += sizeof(uint32_t);
                     // Get string value
