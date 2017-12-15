@@ -142,7 +142,7 @@ bool BSONElement::getBool(void)
     {
         val = (char *) &e_data + sizeof(char) + strlen(getKey()) + 1;
     }
-    return (*val == 1 ? true : false);
+    return (val[0] == 1 ? true : false);
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
