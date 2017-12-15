@@ -138,11 +138,11 @@ int BSONElement::getInt(void)
 bool BSONElement::getBool(void)
 {
     char* val = 0;
-    if (isInt())
+    if (isBool())
     {
         val = (char *) &e_data + sizeof(char) + strlen(getKey()) + 1;
     }
-    return (val[0] == 1 ? true : false);
+    return (*val == 1 ? true : false);
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
