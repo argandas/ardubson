@@ -116,6 +116,25 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, int64_t value)
     return *this;
 }
 
+// Append double
+BSONObjBuilder& BSONObjBuilder::append(const char *key, double value)
+{
+    return BSONObjBuilder::append(key, (float) value);
+}
+BSONObjBuilder& BSONObjBuilder::append(const char *key, float value)
+{
+    uint8_t ret = appendNum((char) BSON_TYPE_NUMBER);
+    if (true == ret)
+    {
+        ret &= appendStr(key);
+        if (true == ret)
+        {
+            ret &= appendNum(value);
+        }
+    }
+    return *this;
+}
+
 // Generate BSON Object, this finishes the BSON Object builder,
 // no more elements should be added after this.
 BSONObject BSONObjBuilder::obj(void)
