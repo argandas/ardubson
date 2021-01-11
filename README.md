@@ -3,7 +3,7 @@ Lightweight BSON Library for Arduino
 
 ## Status
 
-This is a fork of https://github.com/argandas/ardubson/releases, with some new features, like a serial stream parser class.
+This is a fork of https://github.com/argandas/ardubson, with some new features, like a serial stream parser class.
 
 ## Getting started
 
