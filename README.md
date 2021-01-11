@@ -3,7 +3,7 @@ Lightweight BSON Library for Arduino
 
 ## Status
 
-This is a work in progress, please download the library from the [releases](https://github.com/argandas/ardubson/releases) page.
+This is a fork of https://github.com/argandas/ardubson/releases, with some new features, like a serial stream parser class.
 
 ## Getting started
 
@@ -13,17 +13,20 @@ Please check the examples folder for detailed explanations
 * string
 * int (int values will be converted to int32)
 * boolean
+* double (floats and doubles are the same in Arduino)
 
 ### Default values
 * string: "NaS"
 * int: 0
 * bool: false
+* float: 0.0
 
 ## Classes
 
 - BSONObjBuilder
 - BSONObject
 - BSONElement
+- BSONStreamParser
 
 ### BSONObjBuilder Class
 
