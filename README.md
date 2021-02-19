@@ -1,5 +1,9 @@
+[![Arduino CI](https://github.com/argandas/ardubson/workflows/Arduino%20CI/badge.svg)](https://github.com/marketplace/actions/arduino_ci)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/argandas/ardubson/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/argandas/ardubson)](https://github.com/argandas/ardubson/releases)
+
 # ardubson
-Lightweight BSON Library for Arduino
+Lightweight BSON (Binary JSON) Library for Arduino
 
 ## Status
 

@@ -1,0 +1,19 @@
+{
+    "name": "ardubson",
+    "keywords": "bson, binary, json",
+    "description": "Arduino Library for BSON (Binary JSON)",
+    "authors": [
+        {
+            "name": "Hugo Arganda",
+            "email": "hugo.arganda@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://https://github.com/argandas/ardubson"
+    },
+    "version": "1.2.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}
