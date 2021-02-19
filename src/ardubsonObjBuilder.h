@@ -29,10 +29,10 @@ class BSONObjBuilder: public BSONDocument
         BSONObjBuilder& append(BSONElement element);
 
         /* Append C-string (Must be null terminated ) */
-        BSONObjBuilder& append(const char *key, char *value);
+        BSONObjBuilder& append(const char *key, const char *value);
 
         /* Append Buffer as C-string */
-        BSONObjBuilder& append(const char *key, char *value, int size);
+        BSONObjBuilder& append(const char *key, const char *value, int size);
 
         /* Append bool */
         BSONObjBuilder& append(const char *key, bool value);

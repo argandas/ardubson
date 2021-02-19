@@ -41,13 +41,13 @@ BSONObjBuilder& BSONObjBuilder::append(BSONElement element)
 }
 
 // Append string (char*)
-BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value)
+BSONObjBuilder& BSONObjBuilder::append(const char *key, const char *value)
 {
     return append(key, value, strlen(value) + 1);
 }
 
 // Append string (char*) with a defined length
-BSONObjBuilder& BSONObjBuilder::append(const char *key, char *value, int size)
+BSONObjBuilder& BSONObjBuilder::append(const char *key, const char *value, int size)
 {
     uint8_t ret = appendNum((char) BSON_TYPE_STRING);
     if (true == ret)
@@ -81,7 +81,7 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, bool value)
 }
 
 // Append int32
-BSONObjBuilder& BSONObjBuilder::append(const char *key, int32_t value)
+BSONObjBuilder& BSONObjBuilder::append(const char *key, int value)
 {
     uint8_t ret = appendNum((char) BSON_TYPE_INT32);
     if (true == ret)
@@ -89,7 +89,7 @@ BSONObjBuilder& BSONObjBuilder::append(const char *key, int32_t value)
         ret &= appendStr(key);
         if (true == ret)
         {
-            ret &= appendNum(value);
+            ret &= appendNum((int32_t)value);
         }
     }
     return *this;
