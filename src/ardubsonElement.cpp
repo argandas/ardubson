@@ -73,11 +73,14 @@ void BSONElement::Value(bool value)
 
 bool BSONElement::put(const char* source, int size)
 {
+    bool ret = false;
     if ((_len + size) < BSON_ELM_SIZE)
     {
         memcpy(e_data + _len, source, size);
         _len += size;
+        ret = true;
     }
+    return ret;
 }
 
 char* BSONElement::rawData(void)

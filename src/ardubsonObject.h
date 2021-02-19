@@ -20,6 +20,10 @@ class BSONObject
 {
     public:
 
+        BSONObject() {
+
+        };
+
         /* Build BSON Object from binary data */
         BSONObject(char* data);
 
