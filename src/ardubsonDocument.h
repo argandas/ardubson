@@ -15,7 +15,6 @@
 #include "ardubsonTypes.h"
 #include "ardubsonConfig.h"
 #include "ardubsonElement.h"
-#include "IEEE754tools.h"
 
 class BSONDocument
 {

@@ -7,6 +7,8 @@
 #include "ardubsonDocument.h"
 #include "ardubsonTypes.h"
 #include "ardubsonConfig.h"
+//
+#include "IEEE754tools.h"
 
 // Private Methods //////////////////////////////////////////////////////////////
 
