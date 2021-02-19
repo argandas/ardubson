@@ -46,11 +46,6 @@ void BSONElement::Value(const char* value, int size)
     put(value, size);
 }
 
-void BSONElement::Value(int value)
-{
-    return Value((int32_t) value);
-}
-
 void BSONElement::Value(int32_t value)
 {
     /* Set data type */
