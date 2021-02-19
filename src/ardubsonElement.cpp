@@ -46,7 +46,7 @@ void BSONElement::Value(const char* value, int size)
     put(value, size);
 }
 
-void BSONElement::Value(int32_t value)
+void BSONElement::Value(int value)
 {
     /* Set data type */
     e_data[0] = BSON_TYPE_INT32;
