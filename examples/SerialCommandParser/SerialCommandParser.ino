@@ -58,7 +58,7 @@ void messageHandler(BSONObject * bson_obj) {
     bob.append("status_code", (int32_t)0);
     BSONObject bo = bob.obj();  // Generate BSON Object
     // Send BSON message
-    Serial.write(bo.rawData(), bo.len());
+    Serial.write((uint8_t *)bo.rawData(), bo.len());
   }
 
 }
