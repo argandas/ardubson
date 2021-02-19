@@ -41,6 +41,8 @@ class BSONObjBuilder: public BSONDocument
         BSONObjBuilder& append(const char *key, int16_t value);
         BSONObjBuilder& append(const char *key, int32_t value);
         BSONObjBuilder& append(const char *key, int64_t value);
+        BSONObjBuilder& append(const char *key, float value);
+        BSONObjBuilder& append(const char *key, double value); // In Arduino float==double!!
 
         /* Create BSON Object */
         BSONObject obj(void);

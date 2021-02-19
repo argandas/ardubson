@@ -9,7 +9,7 @@
 // Constructor /////////////////////////////////////////////////////////////////
 
 BSONElement::BSONElement(void) :
-    _len(1)
+    _len(0)
 {
     memset(e_data, 0x00, BSON_ELM_SIZE);
 }
@@ -67,6 +67,16 @@ void BSONElement::Value(int64_t value)
     put((char *) &value, sizeof(int64_t));
 }
 
+void BSONElement::Value(float value)
+{
+    /* Set data type */
+    e_data[0] = BSON_TYPE_NUMBER;
+    /* Add value */
+    byte x[8];
+    float2DoublePacked(value, x, LSBFIRST);
+    put((char *) &x, sizeof(x));  //64 bits
+}
+
 void BSONElement::Value(bool value)
 {
     char val = (value ? 1 : 0);
@@ -118,6 +128,11 @@ bool BSONElement::isInt(void)
     return (getType() == (char) BSON_TYPE_INT32);
 }
 
+bool BSONElement::isDouble(void)
+{
+    return (getType() == (char) BSON_TYPE_NUMBER);
+}
+
 bool BSONElement::isBool(void)
 {
     return (getType() == (char) BSON_TYPE_BOOLEAN);
@@ -141,6 +156,18 @@ int BSONElement::getInt(void)
         val = (int32_t*) ((char *) &e_data + sizeof(char) + strlen(getKey()) + 1);
     }
     return *val;
+}
+
+float BSONElement::getDouble(void)
+{
+    float val = 0;
+    if (isDouble())
+    {
+        val = doublePacked2Float((byte *) &e_data +
+                            sizeof(char) + strlen(getKey()) + 1, LSBFIRST);
+
+    }
+    return val;
 }
 
 bool BSONElement::getBool(void)

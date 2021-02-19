@@ -32,6 +32,7 @@ class BSONElement
         void Value(int32_t value);
         void Value(int64_t value);
         void Value(bool value);
+        void Value(float value);
 
         // Get attibutes
         char getType(void);
@@ -40,10 +41,12 @@ class BSONElement
         bool isBool(void);
         bool isInt(void);
         bool isString(void);
+        bool isDouble(void);
         // Get values
         char* getString(void);
         int getInt(void);
         bool getBool(void);
+        float getDouble(void);
 
     private:
         bool put(const char* source, int size);

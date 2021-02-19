@@ -34,6 +34,7 @@ BSONElement BSONObject::getField(const char *fieldName)
     char *e_data = NULL;
     int e_len = 0;
     BSONElement be;
+    bool key_found = false;
 
     uint32_t off = sizeof(uint32_t);
 
@@ -45,61 +46,77 @@ BSONElement BSONObject::getField(const char *fieldName)
         off++;
         e_len = 1;
 
-        // Get element key
-        char *key = (char *)&_objData[off];
-        off += strlen(key) + 1;
-        e_len += strlen(key) + 1;
-        // Check key
-        if (strcmp(fieldName, key) == 0)
+        // Check data type range
+        if ((type > (char) BSON_MINKEY) && (type < (char) BSON_MAXKEY))
         {
-            // Save value
-            if (type == (char)BSON_TYPE_STRING)
+            // Get element key
+            char *key = (char *) &_objData[off];
+            off += strlen(key) + 1;
+            e_len += strlen(key) + 1;
+
+            // Check key
+            key_found = (strcmp(fieldName, key) == 0);
+
+            if (type == (char) BSON_TYPE_STRING)
             {
                 // Get string size
-                uint32_t sz = 0;
-                memcpy(&sz, &(_objData[off]), sizeof(uint32_t));
+                uint32_t sz = *(uint32_t *) &_objData[off];
                 off += sizeof(uint32_t);
                 e_len += sizeof(uint32_t);
                 // Get string value
-                //char *val = (char *) &_objData[off];
+                char *val = (char *) &_objData[off];
                 off += sz;
                 e_len += sz;
-                break;
+                if (key_found) break;
             }
-            else if (type == (char)BSON_TYPE_INT32)
+            else if (type == (char) BSON_TYPE_INT32)
             {
                 // Get value
-                //int32_t val = *(int32_t *) &_objData[off];
+                int32_t val = *(int32_t *) &_objData[off];
                 off += sizeof(int32_t);
                 e_len += sizeof(int32_t);
-                break;
+                if (key_found) break;
             }
-            else if (type == (char)BSON_TYPE_INT64)
+            else if (type == (char) BSON_TYPE_INT64)
             {
                 // Get value
-                //int64_t val = *(int64_t *) &_objData[off];
+                int64_t val = *(int64_t *) &_objData[off];
                 off += sizeof(int64_t);
                 e_len += sizeof(int64_t);
-                break;
+                if (key_found) break;
             }
-            else if (type == (char)BSON_TYPE_BOOLEAN)
+            else if (type == (char) BSON_TYPE_BOOLEAN)
             {
                 // Get value
-                //char val = *(char *) &_objData[off];
+                char val = *(char *) &_objData[off];
                 off += sizeof(char);
                 e_len += sizeof(char);
+                if (key_found) break;
+            }
+            else if (type == (char) BSON_TYPE_NUMBER)
+            {
+                // Get value
+                float val = doublePacked2Float((byte *) &_objData[off], LSBFIRST);
+                off += 8;
+                e_len += 8;
+                if (key_found) break;
+            }
+
+            // EOO
+            if ((uint32_t) BSON_EOO == _objData[off]) {
                 break;
             }
-            // EOO
-            if ((uint32_t)BSON_EOO == _objData[off])
-                break;
         }
         else
         {
             // Ignore incoming data
         }
     }
-    return be.Fill(e_data, e_len);
+    if (key_found) {
+        return be.Fill(e_data, e_len);
+    } else {
+        return BSONElement();   //Empty result
+    }
 }
 
 bool BSONObject::appendJSON(const char *data)
@@ -115,7 +132,7 @@ bool BSONObject::appendJSON(const char *data)
     return true;
 }
 
-char *BSONObject::jsonString(void)
+char* BSONObject::jsonString(int decimal_places)
 {
     /* Clear buffer */
     memset(_jsonStr, 0x00, JSON_MAX_SIZE);
@@ -186,6 +203,13 @@ char *BSONObject::jsonString(void)
                 appendJSON(buff);
                 break;
             }
+            case BSON_TYPE_NUMBER:
+            {
+                float val = doublePacked2Float((byte *) data, LSBFIRST);
+                data += 8;
+                appendJSON(String(val, decimal_places).c_str());
+                break;
+            }
             case BSON_TYPE_BOOLEAN:
             {
                 char val = *(char *)data;
@@ -222,3 +246,14 @@ char *BSONObject::jsonString(void)
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
+
+void dumpHex(char* data, int len) {
+  for (int i = 0; i < len; i++, data++) {
+    Serial.print("0x");
+    if ((unsigned char)*data <= 0xF) Serial.print("0");
+    Serial.print((unsigned char)*data, HEX);
+    Serial.print(" ");
+    if ((i + 1) % 0x8 == 0) Serial.println();
+  }
+  Serial.println();
+}
