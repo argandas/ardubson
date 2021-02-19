@@ -1,5 +1,7 @@
 #include "ardubsonStreamParser.h"
 
+static errorCallbackPtr parseErrorPointer;
+static messageCallbackPtr messagePointer;
 
 BSONStreamParser::BSONStreamParser(void) {
     buffer_index = 0;

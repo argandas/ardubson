@@ -19,7 +19,7 @@ void setup() {
 
   // Append elements to BSON Builder
   bob.append(be); /* Append BSON Element */
-  bob.append("number", 3698);
+  bob.append("number", (int32_t)3698);
   bob.append("boolean", true);
 
   // Generate BSON Object

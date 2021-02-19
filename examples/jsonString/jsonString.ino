@@ -16,7 +16,7 @@ void setup() {
 
   // Append elements to BSON Builder
   bob.append("string", "2");
-  bob.append("int", 4);
+  bob.append("int", (int32_t)4);
   bob.append("boolean", true);
 
   // Generate BSON Object

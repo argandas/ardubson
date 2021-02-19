@@ -37,10 +37,11 @@ void dumpDBL(struct _DBL dbl)
 // converts a float to a packed array of 8 bytes representing a 64 bit double
 // restriction exponent and mantisse.
 // float;  array of 8 bytes;  LSBFIRST; MSBFIRST
-void float2DoublePacked(float number, byte* bar, int byteOrder = LSBFIRST)
+void float2DoublePacked(float number, byte* bar, int byteOrder)
 {
     _FLOATCONV fl;
     fl.f = number;
+    fl.p = IEEEfloat();
     _DBLCONV dbl;
     dbl.p.filler = 0;
     dbl.p.s = fl.p.s;
@@ -70,7 +71,7 @@ void float2DoublePacked(float number, byte* bar, int byteOrder = LSBFIRST)
 // converts a packed array of bytes into a 32bit float.
 // there can be an exponent overflow
 // the mantisse is truncated to 23 bits.
-float doublePacked2Float(byte* bar, int byteOrder = LSBFIRST)
+float doublePacked2Float(byte* bar, int byteOrder)
 {
     _FLOATCONV fl;
     _DBLCONV dbl;

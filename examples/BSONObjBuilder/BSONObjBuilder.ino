@@ -15,9 +15,9 @@ void setup() {
   BSONObjBuilder bob;
   // Append an element to BSON Builder
   bob.append("hello", "world");
-  bob.append("number", 1990);
+  bob.append("number", (int32_t)1990);
   // Or try inline notation
-  bob.append("one", 1).append("two", 2).append("three", 3);
+  bob.append("one", (int32_t)1).append("two", (int32_t)2).append("three", (int32_t)3);
 
   // Generate BSON Object
   BSONObject bo = bob.obj();

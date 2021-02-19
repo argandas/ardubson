@@ -15,5 +15,5 @@
 #include "ardubsonElement.h"
 #include "ardubsonObjBuilder.h"
 #include "ardubsonObject.h"
-
+#include "ardubsonStreamParser.h"
 #endif

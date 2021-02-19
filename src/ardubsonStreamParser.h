@@ -14,9 +14,6 @@
 typedef void (*errorCallbackPtr)(int error_code);
 typedef void (*messageCallbackPtr)(BSONObject * bson_object);
 
-static errorCallbackPtr parseErrorPointer;
-static messageCallbackPtr messagePointer;
-
 class BSONStreamParser
 {
     protected:

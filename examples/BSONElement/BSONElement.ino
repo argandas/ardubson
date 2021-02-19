@@ -12,7 +12,7 @@ void setup() {
   Serial.println("BSON Element example");
   
   BSONElement be;
-  be.Key("hello").Value(192);
+  be.Key("hello").Value((int32_t)192);
 
   Serial.print("\r\nBSON Element data length: ");
   Serial.println(be.len());

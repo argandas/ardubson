@@ -64,7 +64,7 @@ BSONElement BSONObject::getField(const char *fieldName)
                 off += sizeof(uint32_t);
                 e_len += sizeof(uint32_t);
                 // Get string value
-                char *val = (char *) &_objData[off];
+                //char *val = (char *) &_objData[off];
                 off += sz;
                 e_len += sz;
                 if (key_found) break;
@@ -72,7 +72,7 @@ BSONElement BSONObject::getField(const char *fieldName)
             else if (type == (char) BSON_TYPE_INT32)
             {
                 // Get value
-                int32_t val = *(int32_t *) &_objData[off];
+                //int32_t val = *(int32_t *) &_objData[off];
                 off += sizeof(int32_t);
                 e_len += sizeof(int32_t);
                 if (key_found) break;
@@ -80,7 +80,7 @@ BSONElement BSONObject::getField(const char *fieldName)
             else if (type == (char) BSON_TYPE_INT64)
             {
                 // Get value
-                int64_t val = *(int64_t *) &_objData[off];
+                //int64_t val = *(int64_t *) &_objData[off];
                 off += sizeof(int64_t);
                 e_len += sizeof(int64_t);
                 if (key_found) break;
@@ -88,7 +88,7 @@ BSONElement BSONObject::getField(const char *fieldName)
             else if (type == (char) BSON_TYPE_BOOLEAN)
             {
                 // Get value
-                char val = *(char *) &_objData[off];
+                //char val = *(char *) &_objData[off];
                 off += sizeof(char);
                 e_len += sizeof(char);
                 if (key_found) break;
@@ -96,7 +96,7 @@ BSONElement BSONObject::getField(const char *fieldName)
             else if (type == (char) BSON_TYPE_NUMBER)
             {
                 // Get value
-                float val = doublePacked2Float((byte *) &_objData[off], LSBFIRST);
+                //float val = doublePacked2Float((byte *) &_objData[off], LSBFIRST);
                 off += 8;
                 e_len += 8;
                 if (key_found) break;
