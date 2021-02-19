@@ -83,6 +83,28 @@ uint8_t BSONDocument::appendNum(int64_t value)
     return ret;
 }
 
+uint8_t BSONDocument::appendNum(double value)
+{
+    return BSONDocument::appendNum((float) value);
+}
+
+uint8_t BSONDocument::appendNum(float value)
+{
+    uint8_t ret = false;
+    if (BSON_DOC_SIZE > (_idx + 8))
+    {
+        byte x[8];
+        float2DoublePacked(value, x, LSBFIRST);
+        for (int i=0; i<8; i++) {
+            /* Append bytes */
+            *(char *) index() = (char) x[i];
+            _idx += 1;
+        }
+        ret = true;
+    }
+    return ret;
+}
+
 uint8_t BSONDocument::appendStr(const char *data)
 {
     uint8_t ret = false;

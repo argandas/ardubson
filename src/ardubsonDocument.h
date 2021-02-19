@@ -15,6 +15,7 @@
 #include "ardubsonTypes.h"
 #include "ardubsonConfig.h"
 #include "ardubsonElement.h"
+#include "IEEE754tools.h"
 
 class BSONDocument
 {
@@ -29,6 +30,8 @@ class BSONDocument
         uint8_t appendNum(uint32_t value);
         uint8_t appendNum(int32_t value);
         uint8_t appendNum(int64_t value);
+        uint8_t appendNum(float value);
+        uint8_t appendNum(double value);
         uint8_t appendStr(const char *data);
 
     public:
