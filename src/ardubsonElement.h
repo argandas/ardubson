@@ -28,7 +28,8 @@ class BSONElement
         BSONElement& Key(const char *key);
         void Value(const char *value);
         void Value(const char *value, int size);
-        void Value(int value);
+        void Value(int16_t value);
+        void Value(int32_t value);
         void Value(int64_t value);
         void Value(bool value);
 

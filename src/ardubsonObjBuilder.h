@@ -38,7 +38,8 @@ class BSONObjBuilder: public BSONDocument
         BSONObjBuilder& append(const char *key, bool value);
 
         /* Append numbers */
-        BSONObjBuilder& append(const char *key, int value);
+        BSONObjBuilder& append(const char *key, int16_t value);
+        BSONObjBuilder& append(const char *key, int32_t value);
         BSONObjBuilder& append(const char *key, int64_t value);
 
         /* Create BSON Object */

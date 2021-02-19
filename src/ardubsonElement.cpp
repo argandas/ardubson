@@ -11,7 +11,7 @@
 BSONElement::BSONElement(void) :
     _len(1)
 {
-    memset(e_data, NULL, BSON_ELM_SIZE);
+    memset(e_data, 0x00, BSON_ELM_SIZE);
 }
 
 BSONElement& BSONElement::Fill(char* data, int len)
@@ -46,7 +46,12 @@ void BSONElement::Value(const char* value, int size)
     put(value, size);
 }
 
-void BSONElement::Value(int value)
+void BSONElement::Value(int16_t value)
+{
+    return Value((int32_t) value);
+}
+
+void BSONElement::Value(int32_t value)
 {
     /* Set data type */
     e_data[0] = BSON_TYPE_INT32;
