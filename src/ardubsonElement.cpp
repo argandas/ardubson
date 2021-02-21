@@ -25,7 +25,8 @@ BSONElement &BSONElement::Fill(char *data, int len)
 BSONElement &BSONElement::Key(const char *key)
 {
     /* Placeholder for data type */
-    put(0x00, 1);
+    e_name(BSON_TYPE_NULL);
+    _len = 1;
 
     /* Add key value */
     put(key, strlen(key) + 1);
