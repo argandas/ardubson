@@ -2,14 +2,9 @@
 #include <ArduinoUnitTests.h>
 #include <ardubson.h>
 
-/* Test Setup */
-unittest_setup()
-{
-    BSONElement be;
-}
-
 unittest(BSONElement_int32_t)
 {
+    BSONElement be;
     be.Key("hello").Value((int32_t)192);
 
     assertEqual(10, be.len());
