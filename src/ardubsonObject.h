@@ -15,37 +15,33 @@
 #include "ardubsonTypes.h"
 #include "ardubsonConfig.h"
 #include "ardubsonElement.h"
-#include "IEEE754tools.h"
 
 class BSONObject
 {
-    public:
+public:
+    BSONObject(){
 
-        BSONObject() {
+    };
 
-        };
+    /* Build BSON Object from binary data */
+    BSONObject(char *data);
 
-        /* Build BSON Object from binary data */
-        BSONObject(char* data);
+    /* API to BSON Object buffer */
+    char *rawData(void);
 
-        /* API to BSON Object buffer */
-        char* rawData(void);
+    /* Total number of bytes comprising the document */
+    int32_t len(void);
 
-        /* Total number of bytes comprising the document */
-        int32_t len(void);
+    /* Get BSON Element by name */
+    BSONElement getField(const char *key);
 
-        /* Get BSON Element by name */
-        BSONElement getField(const char *key);
+    /* Print BSON document in JSON format */
+    char *jsonString(int decimal_places = 3);
 
-        /* Print BSON document in JSON format */
-        char* jsonString(int decimal_places=3);
-
-    private:
-        bool appendJSON(const char* data);
-        char _objData[BSON_BUFF_SIZE];
-        char _jsonStr[JSON_MAX_SIZE];
+private:
+    bool appendJSON(const char *data);
+    char *_objData;
+    char _jsonStr[JSON_MAX_SIZE];
 };
-
-void dumpHex(char* data, int len);
 
 #endif

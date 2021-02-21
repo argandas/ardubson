@@ -1,6 +1,8 @@
 #ifndef ardubson_types_h
 #define ardubson_types_h
 
+#define BSON_BUFF_SIZE  512
+
 #define BSON_EOO        0x00 // \x00 EOO: End-Of-Object
 #define BSON_NULL_BYTE  0x00 // \x00 NULL terminator
 #define BSON_MINKEY     0xFF // \xFF Min key
