@@ -17,43 +17,44 @@
 
 class BSONElement
 {
-    public:
-        BSONElement(void);
-        BSONElement& Fill(char* data, int len);
-        // Methods
-        char* rawData();
-        int len();
+public:
+    BSONElement(void);
+    BSONElement &Fill(char *data, int len);
+    
+    /* Create new element */
+    BSONElement &Key(const char *key);
+    void Value(const char *value);
+    void Value(const char *value, int size);
+    void Value(int16_t value);
+    void Value(int32_t value);
+    void Value(int64_t value);
+    void Value(bool value);
+    void Value(float value);
 
-        /* Create new element */
-        BSONElement& Key(const char *key);
-        void Value(const char *value);
-        void Value(const char *value, int size);
-        void Value(int16_t value);
-        void Value(int32_t value);
-        void Value(int64_t value);
-        void Value(bool value);
-        void Value(float value);
+    // Get methods
+    char *rawData();
+    int len();
+    char getType(void);
+    char *getKey(void);
 
-        // Get attibutes
-        char getType(void);
-        char* getKey(void);
-        // Assertions
-        bool isBool(void);
-        bool isInt(void);
-        bool isString(void);
-        bool isDouble(void);
-        // Get values
-        char* getString(void);
-        int getInt(void);
-        bool getBool(void);
-        float getDouble(void);
+    // Assertions
+    bool isBool(void);
+    bool isInt(void);
+    bool isString(void);
+    bool isDouble(void);
+    
+    // Get values
+    char *getString(void);
+    int getInt(void);
+    bool getBool(void);
+    float getDouble(void);
 
-    private:
-        bool put(const char* source, int size);
-        char* e_type;
-        char* e_name;
-        char e_data[BSON_ELM_SIZE];
-        int _len;
+private:
+    void e_name(const char e_name);
+    bool put(const char *source, int size);
+    char *e_type;
+    char e_data[BSON_ELM_SIZE];
+    int _len;
 };
 
 #endif
