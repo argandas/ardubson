@@ -194,7 +194,7 @@ bool BSONElement::getBool(void)
     return (*val == 1 ? true : false);
 }
 
-bool BSONElement::e_name(const char e_name)
+void BSONElement::e_name(const char e_name)
 {
     e_data[0] = e_name;
 }
