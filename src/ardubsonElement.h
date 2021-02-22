@@ -18,8 +18,9 @@
 class BSONElement
 {
 public:
+    /* Constructors */
     BSONElement(void);
-    BSONElement &Fill(char *data, int len);
+    BSONElement(char *data, int len);
     
     /* Create new element */
     BSONElement &Key(const char *key);
@@ -30,6 +31,7 @@ public:
     void Value(int64_t value);
     void Value(bool value);
     void Value(float value);
+    void Value(double value);
 
     // Get methods
     char *rawData();

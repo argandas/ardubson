@@ -113,7 +113,7 @@ BSONElement BSONObject::getField(const char *fieldName)
         }
     }
     if (key_found) {
-        return be.Fill(e_data, e_len);
+        return BSONElement(e_data, e_len);
     } else {
         return BSONElement();   //Empty result
     }

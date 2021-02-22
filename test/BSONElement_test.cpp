@@ -45,7 +45,7 @@ unittest(BSONElement_string_t)
     assertFalse(be.isDouble());
 }
 
-unittest(BSONElement_Fill)
+unittest(BSONElement_Constructor_t)
 {
     // BSON encoded char array
     char bsonData[] = {
@@ -55,8 +55,7 @@ unittest(BSONElement_Fill)
         'w', 'o', 'r', 'l', 'd', 0x00, // String value
     };
 
-    BSONElement be;
-    be.Fill(bsonData, sizeof(bsonData));
+    BSONElement be(bsonData, sizeof(bsonData));
 
     assertEqual(17, be.len());
     assertEqual(BSON_TYPE_STRING, be.getType());

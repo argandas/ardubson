@@ -13,11 +13,10 @@ BSONElement::BSONElement(void) : _len(0)
     memset(e_data, 0x00, BSON_ELM_SIZE);
 }
 
-BSONElement &BSONElement::Fill(char *data, int len)
+BSONElement::BSONElement(char *data, int len) : _len(0)
 {
-    _len = 0;
+    memset(e_data, 0x00, BSON_ELM_SIZE);
     put(data, len);
-    return *this;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -88,6 +87,11 @@ void BSONElement::Value(float value)
 
     /* Add value */
     put((char *)&x, sizeof(x));
+}
+
+void BSONElement::Value(double value)
+{
+    Value((float)value);
 }
 
 void BSONElement::Value(bool value)
