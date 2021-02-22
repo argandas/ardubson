@@ -68,7 +68,7 @@ unittest(BSONElement_Fill)
     assertFalse(be.isDouble());
 }
 
-unittest(BSONElement_string_t)
+unittest(BSONElement_double_t)
 {
     BSONElement be;
     be.Key("pi").Value(3.1416);
