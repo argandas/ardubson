@@ -68,4 +68,25 @@ unittest(BSONElement_Fill)
     assertFalse(be.isDouble());
 }
 
+unittest(BSONElement_string_t)
+{
+    BSONElement be;
+    be.Key("pi").Value(3.1416);
+
+    /*
+    *   \x01                              -> 0x01 = double
+    *   pi\x00                            -> field name
+    *   \x00\x00\x00\x00\x00\x00\x00\x00  -> 64-bit binary floating point
+    */
+
+    assertEqual(12, be.len());
+    assertEqual(BSON_TYPE_NUMBER, be.getType());
+    assertEqual("pi", be.getKey());
+    assertEqual(3.1416, be.getString());
+    assertFalse(be.isString());
+    assertFalse(be.isInt());
+    assertFalse(be.isBool());
+    assertTrue(be.isDouble());
+}
+
 unittest_main()
