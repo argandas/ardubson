@@ -81,7 +81,7 @@ unittest(BSONElement_double_t)
     assertEqual(12, be.len());
     assertEqual(BSON_TYPE_NUMBER, be.getType());
     assertEqual("pi", be.getKey());
-    assertEqual(3.1416, be.getString());
+    assertEqual(3.1416, be.getDouble());
     assertFalse(be.isString());
     assertFalse(be.isInt());
     assertFalse(be.isBool());
