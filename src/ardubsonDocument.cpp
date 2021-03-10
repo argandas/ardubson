@@ -25,18 +25,6 @@ void BSONDocument::reset(void)
     return;
 }
 
-uint8_t BSONDocument::appendNum(char value)
-{
-    uint8_t ret = false;
-    if (BSON_DOC_SIZE > (_idx + sizeof(char)))
-    {
-        *(char *) index() = value;
-        _idx += sizeof(char);
-        ret = true;
-    }
-    return ret;
-}
-
 uint8_t BSONDocument::appendBSONElement(BSONElement element)
 {
     uint8_t ret = false;
@@ -49,12 +37,25 @@ uint8_t BSONDocument::appendBSONElement(BSONElement element)
     return ret;
 }
 
+
+uint8_t BSONDocument::appendNum(char value)
+{
+    uint8_t ret = false;
+    if (BSON_DOC_SIZE > (_idx + sizeof(char)))
+    {
+        memcpy(index(), (void*)&value, sizeof(char));     
+        _idx += sizeof(char);
+        ret = true;
+    }
+    return ret;
+}
+
 uint8_t BSONDocument::appendNum(uint32_t value)
 {
     uint8_t ret = false;
     if (BSON_DOC_SIZE > (_idx + sizeof(uint32_t)))
     {
-        *(uint32_t *) index() = value;
+        memcpy(index(), (void*)&value, sizeof(uint32_t));     
         _idx += sizeof(uint32_t);
         ret = true;
     }
@@ -66,7 +67,7 @@ uint8_t BSONDocument::appendNum(int32_t value)
     uint8_t ret = false;
     if (BSON_DOC_SIZE > (_idx + sizeof(int32_t)))
     {
-        *(int32_t *) index() = value;
+        memcpy(index(), (void*)&value, sizeof(int32_t));     
         _idx += sizeof(int32_t);
         ret = true;
     }
@@ -78,7 +79,7 @@ uint8_t BSONDocument::appendNum(int64_t value)
     uint8_t ret = false;
     if (BSON_DOC_SIZE > (_idx + sizeof(int64_t)))
     {
-        *(int64_t *) index() = value;
+        memcpy(index(), (void*)&value, sizeof(int64_t));     
         _idx += sizeof(int64_t);
         ret = true;
     }
