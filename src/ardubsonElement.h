@@ -19,6 +19,7 @@ class BSONElement
 {
     public:
         BSONElement(void);
+        BSONElement(char *data, int len);
         BSONElement& Fill(char* data, int len);
         // Methods
         char* rawData();

@@ -13,6 +13,12 @@ BSONElement::BSONElement(void) : _len(0)
     memset(e_data, 0x00, BSON_ELM_SIZE);
 }
 
+BSONElement::BSONElement(char *data, int len) : _len(0)
+{
+    memset(e_data, 0x00, BSON_ELM_SIZE);
+    Fill(data, len);
+}
+
 BSONElement &BSONElement::Fill(char *data, int len)
 {
     _len = 0;

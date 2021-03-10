@@ -34,7 +34,7 @@ char *BSONObject::rawData(void)
 int32_t BSONObject::len(void)
 {
     int32_t size = 0;
-    memcpy((void*)&size, (void*)&_objData[0], sizeof(int32_t));
+    memcpy((void *)&size, (void *)&_objData[0], sizeof(int32_t));
     return size;
 }
 
@@ -42,8 +42,38 @@ BSONElement BSONObject::getField(const char *fieldName)
 {
     char *e_data = NULL;
     int e_len = 0;
+
     BSONElement be;
+
+    getFieldIndex(fieldName, &e_data, &e_len);
+
+    if ((NULL != e_data) && (0 < e_len))
+    {
+        return be.Fill(e_data, e_len);
+    }
+    else
+    {
+#if 0
+        Serial.println("key not found!");
+        Serial.print("e_data = ");
+        Serial.println((int)e_data);
+        Serial.print("e_len = ");
+        Serial.println(e_len);
+#endif
+        return BSONElement(); //Empty result
+    }
+}
+
+void BSONObject::getFieldIndex(const char *fieldName, char **dest, int *size)
+{
+    char *e_data = NULL;
+    int e_len = 0;
     bool key_found = false;
+
+    /*
+    Serial.print("fieldName = ");
+    Serial.println(fieldName);
+    */
 
     // Skip document size field
     int32_t off = sizeof(uint32_t);
@@ -62,11 +92,21 @@ BSONElement BSONObject::getField(const char *fieldName)
             off++;
             e_len = 1;
 
+            /*
+            Serial.print("type = ");
+            Serial.println(type);
+            */
+
             // Check data type range
             if ((type > (signed char)BSON_MINKEY) && (type < (signed char)BSON_MAXKEY))
             {
                 // Get element key
                 char *key = (char *)&_objData[off];
+
+                /*
+                Serial.print("key = ");
+                Serial.println(key);
+                */
 
                 off += strlen(key) + 1;
                 e_len += strlen(key) + 1;
@@ -130,12 +170,72 @@ BSONElement BSONObject::getField(const char *fieldName)
 
     if (key_found)
     {
-        return be.Fill(e_data, e_len);
+        *dest = e_data;
+        *size = e_len;
     }
     else
     {
-        return BSONElement(); //Empty result
+        // Serial.println("key not found");
+        *dest = NULL;
+        *size = 0;
     }
+}
+
+bool BSONObject::updateField(const char *key, int16_t value)
+{
+    return updateField(key, (int32_t)value);
+}
+
+bool BSONObject::updateField(const char *key, int32_t value)
+{
+    char *e_data = NULL;
+    int e_len = 0;
+    bool result = false;
+
+    getFieldIndex(key, &e_data, &e_len);
+
+    if ((NULL != e_data) && (0 < e_len))
+    {
+        char type = *e_data++;
+
+        if (BSON_TYPE_INT32 == type)
+        {
+            // Get element key
+            char *key = e_data;
+            void *val = (void *)key + strlen(key) + 1;
+
+            if (NULL != memcpy(val, (void *)&value, sizeof(int32_t)))
+            {
+                result = true;
+            }
+        }
+#if 0
+        else
+        {
+            Serial.println("type mismatch!");
+            Serial.print("type = ");
+            Serial.println(type);
+        }
+    }
+    else
+    {
+        Serial.println("key not found!");
+        Serial.print("e_data = ");
+        Serial.println((int)e_data);
+        Serial.print("e_len = ");
+        Serial.println(e_len);
+#endif
+    }
+
+    return result;
+}
+
+bool BSONObject::updateField(const char *key, int64_t value)
+{
+    // #helpwanted
+    (void)key;
+    (void)value;
+    return false;
 }
 
 bool BSONObject::appendJSON(const char *data)
