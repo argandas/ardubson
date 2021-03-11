@@ -8,13 +8,18 @@
 
 // Constructor /////////////////////////////////////////////////////////////////
 
-BSONElement::BSONElement(void) :
-    _len(0)
+BSONElement::BSONElement(void) : _len(0)
 {
     memset(e_data, 0x00, BSON_ELM_SIZE);
 }
 
-BSONElement& BSONElement::Fill(char* data, int len)
+BSONElement::BSONElement(char *data, int len) : _len(0)
+{
+    memset(e_data, 0x00, BSON_ELM_SIZE);
+    Fill(data, len);
+}
+
+BSONElement &BSONElement::Fill(char *data, int len)
 {
     _len = 0;
     put(data, len);
@@ -23,32 +28,31 @@ BSONElement& BSONElement::Fill(char* data, int len)
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-
-BSONElement& BSONElement::Key(const char* key)
+BSONElement &BSONElement::Key(const char *key)
 {
     put(key, strlen(key) + 1);
     return *this;
 }
 
-void BSONElement::Value(const char* value)
+void BSONElement::Value(const char *value)
 {
     Value(value, strlen(value) + 1);
 }
 
-void BSONElement::Value(const char* value, int size)
+void BSONElement::Value(const char *value, int size)
 {
-    uint32_t val = (uint32_t) size;
+    uint32_t val = (uint32_t)size;
     /* Set data type */
     e_data[0] = BSON_TYPE_STRING;
     /* Add string size */
-    put((char*) &val, sizeof(uint32_t));
+    put((char *)&val, sizeof(uint32_t));
     /* Add string value */
     put(value, size);
 }
 
 void BSONElement::Value(int16_t value)
 {
-    return Value((int32_t) value);
+    return Value((int32_t)value);
 }
 
 void BSONElement::Value(int32_t value)
@@ -56,7 +60,7 @@ void BSONElement::Value(int32_t value)
     /* Set data type */
     e_data[0] = BSON_TYPE_INT32;
     /* Add value */
-    put((char *) &value, sizeof(int32_t));
+    put((char *)&value, sizeof(int32_t));
 }
 
 void BSONElement::Value(int64_t value)
@@ -64,7 +68,7 @@ void BSONElement::Value(int64_t value)
     /* Set data type */
     e_data[0] = BSON_TYPE_INT64;
     /* Add value */
-    put((char *) &value, sizeof(int64_t));
+    put((char *)&value, sizeof(int64_t));
 }
 
 void BSONElement::Value(float value)
@@ -74,7 +78,7 @@ void BSONElement::Value(float value)
     /* Add value */
     byte x[8];
     float2DoublePacked(value, x, LSBFIRST);
-    put((char *) &x, sizeof(x));  //64 bits
+    put((char *)&x, sizeof(x)); //64 bits
 }
 
 void BSONElement::Value(bool value)
@@ -83,10 +87,10 @@ void BSONElement::Value(bool value)
     /* Set data type */
     e_data[0] = BSON_TYPE_BOOLEAN;
     /* Add value */
-    put((char *) &val, sizeof(char));
+    put((char *)&val, sizeof(char));
 }
 
-bool BSONElement::put(const char* source, int size)
+bool BSONElement::put(const char *source, int size)
 {
     bool ret = false;
     if ((_len + size) < BSON_ELM_SIZE)
@@ -98,9 +102,9 @@ bool BSONElement::put(const char* source, int size)
     return ret;
 }
 
-char* BSONElement::rawData(void)
+char *BSONElement::rawData(void)
 {
-    return (char *) &e_data;
+    return (char *)&e_data;
 }
 
 int BSONElement::len(void)
@@ -113,49 +117,50 @@ char BSONElement::getType(void)
     return e_data[0];
 }
 
-char* BSONElement::getKey(void)
+char *BSONElement::getKey(void)
 {
     return &e_data[1];
 }
 
 bool BSONElement::isString(void)
 {
-    return (getType() == (char) BSON_TYPE_STRING);
+    return (getType() == (char)BSON_TYPE_STRING);
 }
 
 bool BSONElement::isInt(void)
 {
-    return (getType() == (char) BSON_TYPE_INT32);
+    return (getType() == (char)BSON_TYPE_INT32);
 }
 
 bool BSONElement::isDouble(void)
 {
-    return (getType() == (char) BSON_TYPE_NUMBER);
+    return (getType() == (char)BSON_TYPE_NUMBER);
 }
 
 bool BSONElement::isBool(void)
 {
-    return (getType() == (char) BSON_TYPE_BOOLEAN);
+    return (getType() == (char)BSON_TYPE_BOOLEAN);
 }
 
-char* BSONElement::getString(void)
+char *BSONElement::getString(void)
 {
-    char* str = "NaS";
+    char *str = "NaS";
     if (isString())
     {
-        str = (char *) &e_data + sizeof(char) + strlen(getKey()) + 1 + sizeof(uint32_t);
+        str = (char *)&e_data + sizeof(char) + strlen(getKey()) + 1 + sizeof(uint32_t);
     }
     return str;
 }
 
 int BSONElement::getInt(void)
 {
-    int32_t* val = 0;
-    // if (isInt()) // TODO need some way to signal an error (avoid NULL pointer)
+    int32_t val = 0;
+    if (isInt())
     {
-        val = (int32_t*) ((char *) &e_data + sizeof(char) + strlen(getKey()) + 1);
+        void *src = (void *)&e_data + sizeof(char) + strlen(getKey()) + 1;
+        memcpy((void *)&val, src, sizeof(int32_t));
     }
-    return *val;
+    return val;
 }
 
 float BSONElement::getDouble(void)
@@ -163,21 +168,22 @@ float BSONElement::getDouble(void)
     float val = 0;
     if (isDouble())
     {
-        val = doublePacked2Float((byte *) &e_data +
-                            sizeof(char) + strlen(getKey()) + 1, LSBFIRST);
-
+        val = doublePacked2Float((byte *)&e_data +
+                                     sizeof(char) + strlen(getKey()) + 1,
+                                 LSBFIRST);
     }
     return val;
 }
 
 bool BSONElement::getBool(void)
 {
-    char* val = 0;
-    // if (isInt()) // TODO need some way to signal an error (avoid NULL pointer)
+    bool val = false;
+    if (isBool())
     {
-        val = (char *) &e_data + sizeof(char) + strlen(getKey()) + 1;
+        char *src = (char *)&e_data + sizeof(char) + strlen(getKey()) + 1;
+        val = *src == 1 ? true : false;
     }
-    return (*val == 1 ? true : false);
+    return val;
 }
 
 // Private Methods //////////////////////////////////////////////////////////////

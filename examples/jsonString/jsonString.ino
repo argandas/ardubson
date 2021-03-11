@@ -8,6 +8,7 @@
 
 void setup() {
   // Setup serial port
+  delay(3000);
   Serial.begin(9600);
   Serial.println("BSON to JSON example");
 

@@ -59,8 +59,24 @@ BSONObjBuilder &BSONObjBuilder::append(const char *key, const char *value, int s
             if (true == ret)
             {
                 ret &= appendStr(value);
+                if (true != ret)
+                {
+                    Serial.println("Failed to append value");
+                }
+            }
+            else
+            {
+                Serial.println("Failed to append size");
             }
         }
+        else
+        {
+            Serial.println("Failed to append key");
+        }
+    }
+    else
+    {
+        Serial.println("Failed to append type");
     }
     return *this;
 }
@@ -117,13 +133,13 @@ BSONObjBuilder &BSONObjBuilder::append(const char *key, int64_t value)
 }
 
 // Append double
-BSONObjBuilder& BSONObjBuilder::append(const char *key, double value)
+BSONObjBuilder &BSONObjBuilder::append(const char *key, double value)
 {
-    return BSONObjBuilder::append(key, (float) value);
+    return BSONObjBuilder::append(key, (float)value);
 }
-BSONObjBuilder& BSONObjBuilder::append(const char *key, float value)
+BSONObjBuilder &BSONObjBuilder::append(const char *key, float value)
 {
-    uint8_t ret = appendNum((char) BSON_TYPE_NUMBER);
+    uint8_t ret = appendNum((char)BSON_TYPE_NUMBER);
     if (true == ret)
     {
         ret &= appendStr(key);
@@ -145,5 +161,5 @@ BSONObject BSONObjBuilder::obj(void)
         *(uint32_t *)&_doc = _idx; // Add frame length
         _done = true;
     }
-    return BSONObject((char *)_doc);
+    return BSONObject((char *)&_doc[0]);
 }
