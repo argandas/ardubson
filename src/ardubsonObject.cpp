@@ -256,7 +256,7 @@ char *BSONObject::jsonString(int decimal_places)
     /* Clear buffer */
     memset(_jsonStr, 0x00, JSON_MAX_SIZE);
 
-    appendJSON("{");
+    appendJSON("{\r\n    ");
 
     char *data = (char *)&_objData;
 
@@ -270,18 +270,24 @@ char *BSONObject::jsonString(int decimal_places)
         signed char type = *data;
         data += sizeof(char);
 
+        //Serial.print("type = ");
+        //Serial.println(type);
+
         // Check data type range
         if ((type > (signed char)BSON_MINKEY) && (type < (signed char)BSON_MAXKEY))
         {
             // Add trailing comma
             if (!first)
             {
-                appendJSON(",");
+                appendJSON(",\r\n    ");
             }
 
             // Get element key
             char *key = data;
             data += strlen(key) + 1;
+
+            //Serial.print("key = ");
+            //Serial.println(key);
 
             appendJSON("\"");
             appendJSON(key);
@@ -294,19 +300,20 @@ char *BSONObject::jsonString(int decimal_places)
             case BSON_TYPE_STRING:
             {
                 // Get string size
-                uint32_t sz = *(uint32_t *)data;
+                uint32_t string_size = 0;
+                memcpy((void *)&string_size, (void *)data, sizeof(uint32_t));
                 data += sizeof(uint32_t);
                 appendJSON("\"");
                 appendJSON(data);
                 appendJSON("\"");
-                data += sz;
+                data += string_size;
                 break;
             }
             case BSON_TYPE_INT32:
             {
-                int32_t val = *(int32_t *)data;
+                int32_t val = 0;
+                memcpy((void *)&val, (void *)data, sizeof(int32_t));
                 data += sizeof(int32_t);
-                /* TODO: Fix int32 data type being truncated to int by using itoa() */
                 char buff[8];
                 itoa(val, buff, 10);
                 appendJSON(buff);
@@ -360,6 +367,6 @@ char *BSONObject::jsonString(int decimal_places)
         // At least one element has been added
         first = false;
     }
-    appendJSON("}");
+    appendJSON("\r\n}");
     return (char *)&_jsonStr;
 }
