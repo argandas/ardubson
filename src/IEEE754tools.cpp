@@ -40,8 +40,8 @@ void dumpDBL(struct _DBL dbl)
 void float2DoublePacked(float number, byte* bar, int byteOrder)
 {
     _FLOATCONV fl;
-    fl.f = number;
     fl.p = IEEEfloat();
+    fl.f = number;
     _DBLCONV dbl;
     dbl.p.filler = 0;
     dbl.p.s = fl.p.s;
